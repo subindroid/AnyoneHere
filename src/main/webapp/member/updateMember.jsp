@@ -25,7 +25,7 @@ String sessionId = (String) session.getAttribute("userId");
 </sql:query>
 
 <div class="container py-4">
-    <jsp:include page="/WEB-INF/views/menu.jsp" />
+    <jsp:include page="../common/menu.jsp" />
 
     <div class="p-5 mb-4 bg-body-tertiary rounded-3">
         <div class="container-fluid py-5">
@@ -142,7 +142,7 @@ String sessionId = (String) session.getAttribute("userId");
         </form>
     </c:forEach>
 
-    <jsp:include page="/WEB-INF/views/footer.jsp" />
+    <jsp:include page="../common/footer.jsp" />
 </div>
 
 <script>

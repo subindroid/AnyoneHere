@@ -22,11 +22,8 @@
 
     String phone = request.getParameter("phone");     // 폼에 추가 필요
     String address = request.getParameter("address");
-    String latitude = request.getParameter("latitude");
-    String longitude = request.getParameter("longitude");
 
     java.sql.Timestamp joinDate = new java.sql.Timestamp(System.currentTimeMillis());
-    System.out.println("latitude: " + latitude);
 %>
 
 <sql:setDataSource var="dataSource"
@@ -50,8 +47,6 @@
     <sql:param value="<%=phone%>" />
     <sql:param value="<%=address%>" />
     <sql:param value="<%=joinDate%>" />
-	<sql:param value="<%=Double.valueOf(latitude)%>" />
-	<sql:param value="<%=Double.valueOf(longitude)%>" />
 </sql:update>
 
 <c:if test="${resultSet >= 1}">

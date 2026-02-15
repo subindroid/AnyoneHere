@@ -2,13 +2,13 @@
 	pageEncoding="UTF-8"%>
 <html>
 <head>
-<link rel="stylesheet" href="../../../resources/css/bootstrap.min.css" />
+<link rel="stylesheet" href="../resources/css/bootstrap.min.css" />
 <title>Login</title>
 </head>
 <body>
 
 <div class="container py-4">
-<%@ include file="../menu.jsp"%>
+<jsp:include page="../common/menu.jsp" />
 
  <div class="p-5 mb-4 bg-body-tertiary rounded-3">
       <div class="container-fluid py-5">
@@ -48,7 +48,7 @@
 		</div>
 	</div>
 
-<jsp:include page="/WEB-INF/views/footer.jsp" />
+	<jsp:include page="../common/footer.jsp" />
   </div>	
   </body>			
 	

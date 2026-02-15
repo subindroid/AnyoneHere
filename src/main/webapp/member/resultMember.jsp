@@ -7,7 +7,7 @@
 <body>
 
 <div class="container py-4">
-   <jsp:include page="/WEB-INF/views/menu.jsp" />
+	<jsp:include page="../common/menu.jsp" />
 
  <div class="p-5 mb-4 bg-body-tertiary rounded-3">
       <div class="container-fluid py-5">
@@ -44,8 +44,8 @@
 				out.println("<h2 class='alert alert-danger'>회원정보가 삭제되었습니다.</h2>");
 			}
 		%>
-	</div>	
-	<%@ include file="../footer.jsp"%>
+	</div>
+	<jsp:include page="../common/footer.jsp" />
 </div>	
 </body>
 </html>

@@ -3,12 +3,12 @@
 <%@ page import="java.util.Date"%>
 <html>
 <head>
-<link rel="stylesheet" href="../../resources/css/bootstrap.min.css" />
+<link rel="stylesheet" href="resources/css/bootstrap.min.css" />
 <title>Welcome</title>
 </head>
 <body>
 	<div class="container py-4">
-		<%@ include file="menu.jsp"%>
+		<%@ include file="common/menu.jsp"%>
 
 		<%!String greeting = "차쟁이";
 		String tagline = "Anyone Here?";
@@ -66,7 +66,7 @@
 				</div>
 			</div>
 		</div>
-		<%@ include file="footer.jsp"%>
+		<%@ include file="common/footer.jsp"%>
 	</div>
 </body>
 </html>
