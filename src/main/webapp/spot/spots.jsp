@@ -13,7 +13,7 @@
 </head>
 <body>
 <div class="container py-4">
-	<%@ include file="../menu.jsp" %>
+	<jsp:include page="../common/menu.jsp" />
 	
 	<div class="p-5 mb-4 bg-body-tertiary rounded-3">
 		<div class="container-fluid py-5">
@@ -28,7 +28,7 @@
 			Spot spot = null;
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
-			String sql="SELECT * FROM spot";
+			String sql="SELECT * FROM spots";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 
@@ -37,10 +37,11 @@
 		%>
 		<div class="col-md-4">
 			<div class="h-100 p-2">
-				<img src="<%=request.getContextPath()%>/resources/images/<%=rs.getString("spot_filename") %>" style="width:250px; height:350px" />
+				<img src="<%=request.getContextPath()%>/resources/images/<%=rs.getString("spot_image")%>"
+					 style="width:250px; height:350px" />
 				<h5><b><%=rs.getString("spot_name") %></b></h5>
 				<p> <%=rs.getString("spot_description").substring(0,10) %>...
-        		<p> <a href="./product.jsp?productId=<%=rs.getString("p_id") %>" class="btn btn-secondary" role="button">상세 정보 &raquo;></a>
+        		<p> <a href="<%=request.getContextPath()%>/spot/spot.jsp?spotId=<%=rs.getString("spot_id") %>" class="btn btn-secondary" role="button">상세 정보 &raquo;></a>
 			  	<form action="../wishlist/processAddWishlist.jsp" method="post" style="display:inline;">
   					<input type="hidden" name="spotId" value="<%=rs.getString("spot_id") %>">
   					<input type="hidden" name="spotName" value="<%=rs.getString("spot_name") %>">
@@ -57,7 +58,7 @@
 				conn.close();
 		%>
 	</div>
-	<%@ include file="../footer.jsp" %>
+	<jsp:include page="../common/footer.jsp" />
 </div>
 <script>
     function checkMyLogin(userId) {

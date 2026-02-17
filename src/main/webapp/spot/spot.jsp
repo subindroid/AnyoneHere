@@ -1,9 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 		 pageEncoding="UTF-8"%>
-<%@ page import="dto.Spot, dao.ProductRepository"%>
-<%@ page import="dto.Store, dao.StoreRepository"%>
-<%@ page import="dao.UserRepository, dao.UserRepository, dto.User"%>
-<%@ page import="dao.SpotRepository" %>
+<%@ page import="dao.UserRepository, dao.SpotRepository, dto.User, dto.Spot"%>
 <%@ page errorPage="../exceptionPages/exceptionNoSpot.jsp"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
@@ -16,7 +13,7 @@
 </head>
 <body>
 <div class="container py-5">
-	<%@ include file="../menu.jsp"%>
+	<jsp:include page="../common/menu.jsp" />
 
 	<div class="p-5 mb-4 bg-body-tertiary rounded-3">
 		<div class="container-fluid py-5">
@@ -32,37 +29,35 @@
 			response.sendRedirect("../member/loginMember.jsp"); // 로그인 안된 경우
 			return;
 		}
+		String spotIdString = request.getParameter("spotId");
+		System.out.println(">>> spot.jsp spotIdString = " + spotIdString);
 
-		//productId 파라미터 받기
-		String spotIdString = request.getParameter("spotId"); // String으로 받음
-		int spotId = Integer.parseInt(spotIdString); // String을 int로 변환
+		int spotId = Integer.parseInt(spotIdString);
+		System.out.println(">>> spot.jsp spotId(int) = " + spotId);
 
-		SpotRepository repo = SpotRepository.getInstance();
+		SpotRepository repo = SpotRepository.getInstance();   // 인스턴스 메소드로 바꾼 상태라 가정
 		Spot spot = repo.getSpotBySpotId(spotId);
+		System.out.println(">>> spot.jsp spot = " + spot);
 
 		if (spot == null) {
-			response.sendRedirect("exceptionNoProduct.jsp?spotId=" + spotId);
+			response.sendRedirect("../exceptionPages/exceptionNoSpot.jsp?spotId=" + spotId);
 			return;
 		}
-
-		// 관련 정보 조회
-		User user = UserRepository.getUserById(userId);
-
+	%>
 		<div class="row align-items-md-stretch">
 		<div class="col-md-8">
 		<img
-		src="<%=request.getContextPath()%>/resources/images/<%=product.getFileName()%>"
+		src="<%=request.getContextPath()%>/resources/images/<%=spot.getSpotImage()%>"
 	style="width: 70%;" />
 	<h3>
 		<b><%=spot.getSpotName()%></b>
 	</h3>
-	<p><%=spot.getDescription()%></p>
+	<p><%=spot.getSpotDescription()%></p>
 
 	<form action="../wishlist/processAddWishlist.jsp" method="post"
 		  style="display: inline;">
-		<input type="hidden" name="productId"
-			   value="<%=product.getProductId()%>"> <input
-			type="hidden" name="storeId" value="<%=product.getStoreId()%>">
+		<input type="hidden" name="spotId"
+			   value="<%=spot.getSpotId()%>">
 		<button type="submit" class="btn btn-warning" role="button">찜하기
 			&raquo;</button>
 	</form>
@@ -74,5 +69,5 @@
 </div>
 </body>
 
-<jsp:include page="../footer.jsp" />
+<jsp:include page="../common/footer.jsp" />
 </html>
