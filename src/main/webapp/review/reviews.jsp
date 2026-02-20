@@ -6,6 +6,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page import="dto.Review" %>
 <%@ page import="dao.ReviewRepository" %>
+<%@ page import="dto.Spot" %>
+<%@ page import="dao.SpotRepository" %>
 
 <!DOCTYPE html>
 <html>
@@ -16,7 +18,7 @@
     <%
         String spotIdStr = request.getParameter("spotId");
         if (spotIdStr != null && !spotIdStr.isEmpty()) {
-            int storeId = Integer.parseInt(spotIdStr);
+            int spotId = Integer.parseInt(spotIdStr);
 
             // static 메서드 호출
             ArrayList<Review> reviewList = ReviewRepository.getReviewsBySpotId(spotId);
@@ -33,7 +35,7 @@
 <fmt:setLocale value="${param.language}"/>
 <fmt:bundle basename="bundle.message">
     <div class="container py-4">
-        <%@ include file="../menu.jsp" %>
+        <%@ include file="../common/menu.jsp" %>
 
         <div class="p-5 mb-4 bg-body-tertiary rounded-3">
             <div class="container-fluid py-5">
@@ -65,7 +67,7 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <c:set var="ratingInt" value="${review.rating - (review.rating % 1)}"/>
+                        <c:set var="ratingInt" value="${review.reviewRating - (review.reviewRating % 1)}"/>
                         <c:forEach begin="1" end="${ratingInt}">
                             ⭐
                         </c:forEach>
@@ -85,7 +87,7 @@
             </a>
         </div>
 
-        <%@ include file="../footer.jsp" %>
+        <%@ include file="../common/footer.jsp" %>
     </div>
 </fmt:bundle>
 </body>

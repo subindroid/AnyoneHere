@@ -23,7 +23,7 @@ try {
 	psUser.setString(1, userId);
 	rsUser = psUser.executeQuery();
 	if (rsUser.next()) {
-		userName = rsUser.getString("u_name");
+		userName = rsUser.getString("user_name");
 	}
 
 	// 리뷰 INSERT
@@ -49,5 +49,5 @@ try {
 		conn.close();
 }
 
-response.sendRedirect("spot.jsp?spotId=" + spotId);
+response.sendRedirect("../spot/spot.jsp?spotId=" + spotId);
 %>
