@@ -76,8 +76,14 @@
                         &raquo;
                     </button>
                 </form>
-
-
+                <form action="../spotApplication/spotRemoveApplication.jsp" method="post"
+                      style="display: inline;">
+                    <input type="hidden" name="spotId"
+                           value="<%=spot.getSpotId()%>">
+                    <button type="submit" class="btn btn-warning" role="button">스팟 삭제 요청
+                        &raquo;
+                    </button>
+                </form>
         </div>
     </div>
 
