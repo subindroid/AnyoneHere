@@ -66,10 +66,6 @@
 							</svg> 찜목록</a>
 						</li>
 						</li>
-						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/spotApplication/spotAddApplication.jsp">
-							</svg> 스팟 등록 요청</a>
-						</li>
-						</li>
 
 					</c:otherwise>
 				</c:choose>

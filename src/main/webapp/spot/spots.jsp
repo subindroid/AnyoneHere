@@ -14,12 +14,14 @@
 <body>
 <div class="container py-4">
 	<jsp:include page="../common/menu.jsp" />
-	
 	<div class="p-5 mb-4 bg-body-tertiary rounded-3">
 		<div class="container-fluid py-5">
 			<h1 class="display-5 fw-bold">장소 목록</h1>
 			<p class="col-md-8 fs-4">Spot List</p>
 		</div>
+        <p><a href="../spotApplication/spotAddApplication.jsp">
+        <button type="submit" class="btn btn-primary" role="button">장소 등록 요청
+        </button></a>
 	</div>
 	<%@ include file="../dbconn.jsp" %>
 	<div class="row align-items-md-stretch text-center">
@@ -33,7 +35,7 @@
 			rs = pstmt.executeQuery();
 
 			while(rs.next()) {
-				
+
 		%>
 		<div class="col-md-4">
 			<div class="h-100 p-2">

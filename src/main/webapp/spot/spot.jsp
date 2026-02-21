@@ -67,7 +67,7 @@
                               d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
                     </svg>리뷰 보기
                     &raquo;
-                </button>
+                </button></a>
                 <form action="../wishlist/processAddWishlist.jsp" method="post"
                       style="display: inline;">
                     <input type="hidden" name="spotId"
@@ -76,14 +76,9 @@
                         &raquo;
                     </button>
                 </form>
-                <form action="../spotApplication/spotRemoveApplication.jsp" method="post"
-                      style="display: inline;">
-                    <input type="hidden" name="spotId"
-                           value="<%=spot.getSpotId()%>">
-                    <button type="submit" class="btn btn-warning" role="button">스팟 삭제 요청
-                        &raquo;
-                    </button>
-                </form>
+                <p><a href="../spotApplication/spotRemoveApplication.jsp?spotId=<%=spot.getSpotId()%>">
+                    <button type="submit" class="btn btn-primary" role="button">장소 삭제 요청
+                    </button></a>
         </div>
     </div>
 
