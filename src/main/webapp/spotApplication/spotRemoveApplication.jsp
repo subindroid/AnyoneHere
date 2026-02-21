@@ -1,84 +1,78 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Title</title>
+    <meta charset="UTF-8">
+    <title>AnyoneHere-AddSpotApplication</title>
+    <link rel="stylesheet" href="../../../resources/css/bootstrap.min.css" />
+    <script src="resources/js/validationApplicationSpot.js"></script>
 </head>
 <body>
 <%
-
     String userId = (String) session.getAttribute("userId");
-    String spotId = request.getParameter("spotId");
     if (userId == null) {
 %>
-
 <script>
-    alert("로그인을 해야 리뷰를 작성할 수 있습니다!");
+    alert("로그인을 해야 장소 등록 신청을 할 수 있습니다!");
     location.href = "../member/loginMember.jsp";
 </script>
 <%
         return;
     }
 %>
-<fmt:setLocale value="${param.language}" />
+<fmt:setLocale value='<%=request.getParameter("language")%>' />
 <fmt:bundle basename="bundle.message">
     <div class="container py-4">
-        <%@ include file="../menu.jsp"%>
+        <%@ include file="../common/menu.jsp" %>
 
         <div class="p-5 mb-4 bg-body-tertiary rounded-3">
             <div class="container-fluid py-5">
                 <h1 class="display-5 fw-bold">
-                    <fmt:message key="writeReview" />
+                    <fmt:message key="add_spot_application_title" />
                 </h1>
-                <p class="col-md-8 fs-4">장소에 대한 리뷰를 작성해주세요.</p>
+                <p class="col-md-8 fs-4">Spot Addition</p>
             </div>
         </div>
 
         <div class="row align-items-md-stretch">
-            <div class="text-end mb-3">
+            <div class="text-end">
                 <a href="?language=ko">Korean</a> | <a href="?language=en">English</a>
-                <a href="../member/logoutMember.jsp" class="btn btn-sm btn-success ms-3">logout</a>
+                <a href="../member/logoutMember.jsp" class="btn btn-sm btn-success pull right">logout</a>
             </div>
 
-            <!-- 리뷰 작성 폼 -->
-            <form name="newReview" action="../review/processAddReview.jsp" method="post" class="form-horizontal">
-
-
-                <input type="hidden" name="spotId" value="<%= spotId %>" />
-                <input type="hidden" name="userId" value="<%= userId %>" />
+            <form name="newApplicationSpot" action="processAddSpot.jsp" method="post"
+                  class="form-horizontal" enctype="multipart/form-data">
 
                 <div class="mb-3 row">
-                    <label class="col-sm-2 col-form-label">별점</label>
+                    <label class="col-sm-2"><fmt:message key="spotDescription" /></label>
                     <div class="col-sm-3">
-                        <select name="rating" class="form-select">
-                            <option value="5">★★★★★</option>
-                            <option value="4">★★★★</option>
-                            <option value="3">★★★</option>
-                            <option value="2">★★</option>
-                            <option value="1">★</option>
-                        </select>
+              <textarea name="spot_description" id="spot_description" cols="10" rows="2"
+                        class="form-control" placeholder="10자 이상 적어주세요"></textarea>
                     </div>
                 </div>
 
+                <!-- 장소 사진(선택) -->
                 <div class="mb-3 row">
-                    <label class="col-sm-2 col-form-label">리뷰 내용</label>
+                    <label class="col-sm-2 col-form-label"><fmt:message key="spotImage" /></label>
                     <div class="col-sm-5">
-                     <textarea name="content" rows="5" class="form-control"
-                               placeholder="솔직한 후기를 남겨주세요"></textarea>
+                        <input type="file" name="spotImage" id="spotImage" class="form-control">
                     </div>
                 </div>
 
                 <div class="mb-3 row">
-                    <div class="offset-sm-2 col-sm-10">
-                        <input type="submit" class="btn btn-primary" value="리뷰 등록">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <input type="submit" class="btn btn-primary"
+                               value="<fmt:message key='button' />"
+                               onclick="CheckRemoveSpot()">
                     </div>
                 </div>
-
             </form>
         </div>
-
-        <%@ include file="../footer.jsp"%>
     </div>
 </fmt:bundle>
+<jsp:include page="../common/footer.jsp" />
 </body>
 </html>
+

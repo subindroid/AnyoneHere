@@ -49,27 +49,21 @@
 </head>
 <body>
 <div class="container py-4">
-    <%@ include file = "../menu.jsp" %>
+    <%@ include file = "../common/menu.jsp" %>
 
     <div class="p-5 mb-4 bg-body-tertiary rounded-3">
         <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">주문 완료</h1>
-            <p class="col-md-8 fs-4">Order Completed</p>
+            <h1 class="display-5 fw-bold">신청 완료</h1>
+            <p class="col-md-8 fs-4">Application Completed</p>
         </div>
     </div>
 
-    <div class="row align-items-md-stretch">
-        <h1>! 반드시 상점 채팅으로 <b>'구매 상품명 + 배송정보'</b>를 보내주세요 !</h1>
-        <h2 class="alert alert-danger">주문해주셔서 감사합니다</h2>
-        <p> 주문은 <%= shipping_shippingDate %> 에 배송될 예정입니다!</p>
-        <p> 주문 번호: <%= shipping_cartId %></p>
-    </div>
 
     <div class="container">
-        <p> <a href="./products.jsp" class="btn btn-secondary">&laquo; 상품목록</a>
+        <p> <a href="./spots.jsp" class="btn btn-secondary">&laquo; 장소 목록</a>
     </div>
 
-    <%@include file="../footer.jsp" %>
+    <%@include file="../common/footer.jsp" %>
 </div>
 </body>
 </html>
