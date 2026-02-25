@@ -12,7 +12,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE users
 (
     user_id       VARCHAR(30)  NOT NULL,               -- PK: 유저 아이디
-    user_email    VARCHAR(100)  NOT NULL UNIQUE,       -- 유저 이메일
+    user_email    VARCHAR(100) NOT NULL UNIQUE,        -- 유저 이메일
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 가입일자
     user_password VARCHAR(255) NOT NULL,               -- 비밀번호
     user_name     VARCHAR(10)  NOT NULL,               -- 사용자 이름
@@ -77,7 +77,7 @@ CREATE TABLE spots
     spot_category    INT                NOT NULL,
 
     PRIMARY KEY (spot_id),
-    FOREIGN KEY (spot_category) REFERENCES  spot_category(category_id) ON DELETE CASCADE
+    FOREIGN KEY (spot_category) REFERENCES spot_category (category_id) ON DELETE CASCADE
 ) DEFAULT CHARSET = utf8mb4;
 
 -- 특정 스팟에 현재 존재하는 사용자 수에 대한 집계 결과
@@ -140,30 +140,45 @@ CREATE TABLE wishlist
 -- 스팟 추가 요청
 CREATE TABLE add_spot_applications
 (
-    -- 이거 add추가할지말지 고민티비
-    application_id   INT AUTO_INCREMENT NOT NULL,           -- PK: 신청서 고유 ID
-    user_id          VARCHAR(30)        NOT NULL,           -- FK: 유저 ID
-    spot_name        VARCHAR(20)        NOT NULL,           -- 추가할 장소명
-    spot_latitude    DECIMAL(10, 7),                        -- 추가할 장소 위도
-    spot_longitude   DECIMAL(10, 7),                        -- 추가할 장소 위치
-    spot_description VARCHAR(500)       NOT NULL,           -- 장소 설명
-    add_spot_application_status VARCHAR(20) DEFAULT 'PENDING',         -- 승인 여부
-    add_spot_created_at    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP, -- 폼 제출 일자
+    add_application_id  INT AUTO_INCREMENT NOT NULL,           -- PK: 신청서 고유 ID
+    user_id             VARCHAR(30)        NOT NULL,           -- FK: 유저 ID
+    spot_name           VARCHAR(20)        NOT NULL,           -- 추가할 장소명
+    spot_latitude       DECIMAL(10, 7),                        -- 추가할 장소 위도
+    spot_longitude      DECIMAL(10, 7),                        -- 추가할 장소 위치
+    spot_description    VARCHAR(500)       NOT NULL,           -- 장소 설명
+    add_status          VARCHAR(20) DEFAULT 'PENDING',         -- 승인 여부
+    add_spot_created_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP, -- 폼 제출 일자
+    -- 2/25 추가
+    spot_image          VARCHAR(50)        NOT NULL,
+    added_spot_address  VARCHAR(50)        NOT NULL,
 
-    PRIMARY KEY (application_id),
+    PRIMARY KEY (add_application_id),
     FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
-    CHECK (add_spot_application_status IN ('PENDING','APPROVED','REJECTED'))
+    CHECK (add_status IN ('PENDING', 'APPROVED', 'REJECTED'))
 
 ) DEFAULT CHARSET = utf8mb4;
 
+-- 2/25 추가
+CREATE TABLE remove_spot_applications
+(
+    remove_application_id  INT AUTO_INCREMENT PRIMARY KEY,
+    user_id                VARCHAR(30)  NOT NULL,
+    spot_id                INT          NOT NULL,
+    remove_reason          VARCHAR(300) NOT NULL,
+    remove_status          VARCHAR(20) DEFAULT 'PENDING',
+    remove_spot_created_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
 
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+    FOREIGN KEY (spot_id) REFERENCES spots (spot_id) ON DELETE CASCADE,
+    CHECK (remove_status IN ('PENDING', 'APPROVED', 'REJECTED'))
+);
 -- 2/10 추가!!!!!!!!!!!!!!!!!!!!!!!!
 CREATE TABLE user_current_location
 (
     user_id           VARCHAR(30) NOT NULL, -- FK: 유저 ID
     current_latitude  DECIMAL(10, 7),
     current_longitude DECIMAL(10, 7),
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (user_id),
