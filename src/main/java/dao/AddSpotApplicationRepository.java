@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class AddSpotApplicationRepository {
 
 
-    public static AddSpotApplication getAddApplicationByAddApplicationId(int applicationId) {
+    public static AddSpotApplication getAddApplicationById(int applicationId) {
         AddSpotApplication addSpotApplication = null;
         Connection conn = null;
         PreparedStatement ps = null;
@@ -22,19 +22,19 @@ public class AddSpotApplicationRepository {
 
         try {
             conn = DBUtil.getConnection();
-            String sql = "SELECT * FROM add_spot_applications WHERE application_id = ?";
+            String sql = "SELECT * FROM add_spot_applications WHERE add_application_id = ?";
             ps = conn.prepareStatement(sql);
             ps.setInt(1, applicationId);
             rs = ps.executeQuery();
 
             if (rs.next()) {
                 addSpotApplication = new AddSpotApplication();
-                addSpotApplication.setApplicationId(rs.getInt("application_id"));
+                addSpotApplication.setApplicationId(rs.getInt("add_application_id"));
                 addSpotApplication.setSpotName(rs.getString("spot_name"));
                 addSpotApplication.setSpotDescription(rs.getString("spot_description"));
                 addSpotApplication.setSpotLatitude(rs.getDouble("spot_latitude"));
                 addSpotApplication.setSpotLongitude(rs.getDouble("spot_longitude"));
-                addSpotApplication.setStatus(rs.getString("add_spot_application_status"));
+                addSpotApplication.setStatus(rs.getString("add_status"));
                 Timestamp ts = rs.getTimestamp("add_spot_created_at");
                 if (ts != null) {
                     addSpotApplication.setCreatedAt(ts.toLocalDateTime());
@@ -54,7 +54,7 @@ public class AddSpotApplicationRepository {
         String sql = """
         INSERT INTO add_spot_applications
         (user_id, spot_name, spot_latitude, spot_longitude,
-         spot_description, add_spot_application_status, add_spot_created_at)
+         spot_description, add_status, add_spot_created_at)
         VALUES (?, ?, ?, ?, ?, ?, NOW())
     """;
 
@@ -78,8 +78,8 @@ public class AddSpotApplicationRepository {
     public static void updateStatus(int applicationId, String status) {
         String sql = """
         UPDATE add_spot_applications
-        SET add_spot_application_status = ?
-        WHERE application_id = ?
+        SET add_status = ?
+        WHERE add_application_id = ?
     """;
 
         try (Connection conn = DBUtil.getConnection();
@@ -95,7 +95,7 @@ public class AddSpotApplicationRepository {
 
 
 
-    public static ArrayList<AddSpotApplication> getAddSpotApplicationByUserId(String userId) {
+    public static ArrayList<AddSpotApplication> getAddApplicationByUserId(String userId) {
         ArrayList<AddSpotApplication> addSpotApplications = new ArrayList<>();
         Connection conn = null;
         PreparedStatement pstmt = null;
