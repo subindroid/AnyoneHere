@@ -25,7 +25,7 @@
         return;
     }
 %>
-<fmt:setLocale value="${param.language}" />
+<fmt:setLocale value="ko" />
 <fmt:bundle basename="bundle.message">
     <div class="container py-4">
         <%@ include file="../common/menu.jsp"%>
@@ -46,7 +46,7 @@
             </div>
 
             <!-- 리뷰 작성 폼 -->
-            <form name="newReview" action="processAddReview.jsp" method="post" class="form-horizontal">
+            <form name="newReview" action="${pageContext.request.contextPath}/processAddReview" method="post" class="form-horizontal">
 
 
                 <input type="hidden" name="spotId" value="<%= spotId %>" />

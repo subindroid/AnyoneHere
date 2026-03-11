@@ -68,7 +68,7 @@
                     </svg>리뷰 보기
                     &raquo;
                 </button></a>
-                <form action="../wishlist/processAddWishlist.jsp" method="post"
+                <form action="${pageContext.request.contextPath}/processAddWishlist" method="post"
                       style="display: inline;">
                     <input type="hidden" name="spotId"
                            value="<%=spot.getSpotId()%>">

@@ -22,7 +22,7 @@
     return;
   }
 %>
-<fmt:setLocale value='<%=request.getParameter("language")%>' />
+<fmt:setLocale value="ko" />
 <fmt:bundle basename="bundle.message">
   <div class="container py-4">
     <%@ include file="../common/menu.jsp" %>
@@ -42,7 +42,7 @@
         <a href="../member/logoutMember.jsp" class="btn btn-sm btn-success pull right">logout</a>
       </div>
 
-      <form name="newApplicationSpot" action="processAddSpot.jsp" method="post"
+      <form name="newApplicationSpot" action="${pageContext.request.contextPath}/processAddSpot" method="post"
             class="form-horizontal" enctype="multipart/form-data">
 
         <div class="mb-3 row">
@@ -61,6 +61,14 @@
         </div>
 
         <div class="mb-3 row">
+          <label class="col-sm-2">주소</label>
+          <div class="col-sm-3">
+            <input type="text" name="spot_address" id="spot_address" class="form-control"
+                   placeholder="장소 주소 (선택)">
+          </div>
+        </div>
+
+        <div class="mb-3 row">
           <label class="col-sm-2"><fmt:message key="spotDescription" /></label>
           <div class="col-sm-3">
               <textarea name="spot_description" id="spot_description" cols="10" rows="2"
@@ -71,10 +79,11 @@
         <div class="mb-3 row">
           <label class="col-sm-2"><fmt:message key="category" /></label>
           <div class="col-sm-12">
-            <input type="radio" name="category" value="cafe"> <fmt:message key="cafe" />
-            <input type="radio" name="category" value="park"> <fmt:message key="park" />
-            <input type="radio" name="category" value="dining"> <fmt:message key="dining" />
-            <input type="radio" name="category" value="hobby"> <fmt:message key="hobby" />
+            <input type="radio" name="category" value="1"> 카페/음식점
+            <input type="radio" name="category" value="2"> 공원/자연
+            <input type="radio" name="category" value="3"> 쇼핑
+            <input type="radio" name="category" value="4"> 관광/랜드마크
+            <input type="radio" name="category" value="5"> 문화/공연
           </div>
         </div>
 

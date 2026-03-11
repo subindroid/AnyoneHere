@@ -32,7 +32,7 @@
 
 </head>
 <body>
-<fmt:setLocale value="${param.language}"/>
+<fmt:setLocale value="ko"/>
 <fmt:bundle basename="bundle.message">
     <div class="container py-4">
         <%@ include file="../common/menu.jsp" %>

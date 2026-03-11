@@ -15,6 +15,7 @@ public class User implements Serializable {
     private String userPhone;       // user_phone
     private String userAddress;     // user_address
     private LocalDate createdAt; // created_at
+    private String userRole;        // user_role (USER / ADMIN)
 
     public String getUserPhone() {
         return userPhone;
@@ -86,6 +87,14 @@ public class User implements Serializable {
 
     public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
     }
 
     public User() {

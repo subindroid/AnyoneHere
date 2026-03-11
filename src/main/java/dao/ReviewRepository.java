@@ -101,6 +101,21 @@ public class ReviewRepository {
         return reviews;
     }
 
+    public static void addReview(String userId, int spotId, String content, double rating) {
+        String sql = "INSERT INTO reviews (user_id, spot_id, review_text, review_rating, review_created_at) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            pstmt.setInt(2, spotId);
+            pstmt.setString(3, content);
+            pstmt.setDouble(4, rating);
+            pstmt.setTimestamp(5, new java.sql.Timestamp(System.currentTimeMillis()));
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public ReviewRepository() {
         // 기본 생성자
     }

@@ -12,6 +12,9 @@ public class AddSpotApplication implements Serializable{
     private String spotDescription;        // spot_description
     private String status;    // add_spot_application_status
     private LocalDateTime createdAt;  // add_spot_created_at
+    private String spotCategory;      // spot_category
+    private String spotImage;         // spot_image
+    private String spotAddress;       // added_spot_address
 
     public int getApplicationId() {
         return applicationId;
@@ -75,6 +78,30 @@ public class AddSpotApplication implements Serializable{
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getSpotCategory() {
+        return spotCategory;
+    }
+
+    public void setSpotCategory(String spotCategory) {
+        this.spotCategory = spotCategory;
+    }
+
+    public String getSpotImage() {
+        return spotImage;
+    }
+
+    public void setSpotImage(String spotImage) {
+        this.spotImage = spotImage;
+    }
+
+    public String getSpotAddress() {
+        return spotAddress;
+    }
+
+    public void setSpotAddress(String spotAddress) {
+        this.spotAddress = spotAddress;
     }
 
     public AddSpotApplication() {}

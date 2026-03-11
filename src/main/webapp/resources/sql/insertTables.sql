@@ -20,6 +20,7 @@ CREATE TABLE users
     user_birth    DATE,                                -- 생년월일
     user_phone    VARCHAR(20),                         -- 연락처
     user_address  VARCHAR(100),                        -- 주소
+    user_role     VARCHAR(10) DEFAULT 'USER',          -- 권한 (USER / ADMIN)
 
     PRIMARY KEY (user_id)
 ) DEFAULT CHARSET = utf8mb4;
@@ -61,6 +62,12 @@ CREATE TABLE spot_category
 
     PRIMARY KEY (category_id)
 ) DEFAULT CHARSET = utf8mb4;
+
+INSERT INTO spot_category (category_id, category_name) VALUES
+(1, 'cafe'),
+(2, 'park'),
+(3, 'dining'),
+(4, 'hobby');
 
 
 -- 드라이브 스팟 정보
@@ -148,9 +155,9 @@ CREATE TABLE add_spot_applications
     spot_description    VARCHAR(500)       NOT NULL,           -- 장소 설명
     add_status          VARCHAR(20) DEFAULT 'PENDING',         -- 승인 여부
     add_spot_created_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP, -- 폼 제출 일자
-    -- 2/25 추가
-    spot_image          VARCHAR(50)        NOT NULL,
-    added_spot_address  VARCHAR(50)        NOT NULL,
+    spot_category       VARCHAR(20) DEFAULT 'cafe',            -- 장소 카테고리
+    spot_image          VARCHAR(100),                          -- 장소 사진
+    added_spot_address  VARCHAR(100),                          -- 장소 주소
 
     PRIMARY KEY (add_application_id),
     FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,

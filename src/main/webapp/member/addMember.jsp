@@ -21,7 +21,7 @@
     </div>
 
     <!-- 회원가입 폼 -->
-    <form name="newMember" action="processAddMember.jsp" method="post" onsubmit="return validateSignInForm()">
+    <form name="newMember" action="${pageContext.request.contextPath}/processAddMember" method="post" onsubmit="return validateSignInForm()">
         <!-- 아이디, 비밀번호, 비밀번호 확인, 이름 등 기존 폼은 그대로 유지 -->
         <div class="mb-3 row">
             <label class="col-sm-2">아이디</label>

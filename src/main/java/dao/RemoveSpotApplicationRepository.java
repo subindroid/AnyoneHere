@@ -68,7 +68,7 @@ public class RemoveSpotApplicationRepository {
 
     public static void updateStatus(int applicationId, String status) {
         String sql = """
-        UPDATE rempve_spot_applications
+        UPDATE remove_spot_applications
         SET remove_status = ?
         WHERE remove_application_id = ?
     """;
@@ -84,4 +84,69 @@ public class RemoveSpotApplicationRepository {
         }
     }
 
+    public static ArrayList<RemoveSpotApplication> getAllPending() {
+        ArrayList<RemoveSpotApplication> list = new ArrayList<>();
+        String sql = """
+            SELECT r.*, s.spot_name
+            FROM remove_spot_applications r
+            JOIN spots s ON r.spot_id = s.spot_id
+            WHERE r.remove_status = 'PENDING'
+            ORDER BY r.remove_spot_created_at DESC
+        """;
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                RemoveSpotApplication app = new RemoveSpotApplication();
+                app.setApplicationId(rs.getInt("remove_application_id"));
+                app.setUserId(rs.getString("user_id"));
+                app.setSpotId(rs.getInt("spot_id"));
+                app.setRemoveReason(rs.getString("remove_reason"));
+                app.setStatus(rs.getString("remove_status"));
+                app.setSpotName(rs.getString("spot_name"));
+                Timestamp ts = rs.getTimestamp("remove_spot_created_at");
+                if (ts != null) app.setCreatedAt(ts.toLocalDateTime());
+                list.add(app);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public static ArrayList<RemoveSpotApplication> getRemoveApplicationByUserId(String userId) {
+        ArrayList<RemoveSpotApplication> list = new ArrayList<>();
+        String sql = """
+            SELECT r.*, s.spot_name
+            FROM remove_spot_applications r
+            JOIN spots s ON r.spot_id = s.spot_id
+            WHERE r.user_id = ?
+            ORDER BY r.remove_spot_created_at DESC
+        """;
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    RemoveSpotApplication app = new RemoveSpotApplication();
+                    app.setApplicationId(rs.getInt("remove_application_id"));
+                    app.setUserId(rs.getString("user_id"));
+                    app.setSpotId(rs.getInt("spot_id"));
+                    app.setRemoveReason(rs.getString("remove_reason"));
+                    app.setStatus(rs.getString("remove_status"));
+                    app.setSpotName(rs.getString("spot_name"));
+                    Timestamp ts = rs.getTimestamp("remove_spot_created_at");
+                    if (ts != null) app.setCreatedAt(ts.toLocalDateTime());
+                    list.add(app);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

@@ -26,9 +26,16 @@ public class LoginMemberServlet extends HttpServlet {
         if (valid) {
             HttpSession session = request.getSession();
             session.setAttribute("userId", id);
-            response.sendRedirect("resultMember.jsp?msg=2");
+            // 권한 세션 저장
+            dto.User user = dao.UserRepository.getUserById(id);
+            if (user != null && user.getUserRole() != null) {
+                session.setAttribute("userRole", user.getUserRole());
+            } else {
+                session.setAttribute("userRole", "USER");
+            }
+            response.sendRedirect(request.getContextPath() + "/member/resultMember.jsp?msg=2");
         } else {
-            response.sendRedirect("loginMember.jsp?error=true");
+            response.sendRedirect(request.getContextPath() + "/loginMember.jsp?error=true");
         }
     }
 }

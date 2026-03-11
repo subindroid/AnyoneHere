@@ -29,13 +29,13 @@
 					out.println("</div>");
 				}
 			%>
-  			<form class="form-signin" action="processLoginMember.jsp" method="post">
+  			<form class="form-signin" action="${pageContext.request.contextPath}/processLoginMember" method="post">
   
     			<div class="form-floating mb-3 row">     
       				<input type="text" class="form-control" name='id' id="floatingInput" placeholder="ID" required autofocus>
       				<label for="floatingInput">ID</label>      
     			</div>
-    			<div class="form-floating  mb-3 row">     
+    			<div class="form-floating  mb-3 row">
      	 			<input type="password" class="form-control" name='password' placeholder="Password">
     				 <label for="floatingPassword">Password</label>
 			</div>

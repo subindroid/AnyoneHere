@@ -58,5 +58,13 @@ public class RemoveSpotApplication {
     }
 
     private LocalDateTime createdAt; // remove_spot_created_at
+    private String spotName;         // spots.spot_name (JOIN용)
 
+    public String getSpotName() {
+        return spotName;
+    }
+
+    public void setSpotName(String spotName) {
+        this.spotName = spotName;
+    }
 }

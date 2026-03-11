@@ -15,12 +15,13 @@ String sessionId = (String) session.getAttribute("userId");
 %>
 
 <sql:setDataSource var="dataSource"
-    url="jdbc:mysql://localhost:3306/AnyoneHereDB"
-    driver="com.mysql.jdbc.Driver"
-    user="root" password="1234" />
+                   driver="com.mysql.jdbc.Driver"
+                   url="jdbc:mysql://localhost:3306/AnyoneHereDB"
+                   user="root"
+                   password="1234" />
 
 <sql:query dataSource="${dataSource}" var="resultSet">
-    SELECT * FROM USERS WHERE U_ID=?
+    SELECT * FROM users WHERE user_id = ?
     <sql:param value="<%=sessionId%>" />
 </sql:query>
 
@@ -35,31 +36,31 @@ String sessionId = (String) session.getAttribute("userId");
     </div>
 
     <c:forEach var="row" items="${resultSet.rows}">
-        <c:set var="mail" value="${row.u_email}" />
+        <c:set var="mail" value="${row.user_email}" />
         <c:set var="mail1" value="${fn:split(mail, '@')[0]}" />
         <c:set var="mail2" value="${fn:split(mail, '@')[1]}" />
 
-        <c:set var="birth" value="${row.u_birth}" />
-        <c:set var="year" value="${fn:split(birth, '/')[0]}" />
-        <c:set var="monthRaw" value="${fn:split(birth, '/')[1]}" />
-        <c:set var="dayRaw" value="${fn:split(birth, '/')[2]}" />
+        <c:set var="birth" value="${row.user_birth}" />
+        <c:set var="year" value="${fn:split(birth, '-')[0]}" />
+        <c:set var="monthRaw" value="${fn:split(birth, '-')[1]}" />
+        <c:set var="dayRaw" value="${fn:split(birth, '-')[2]}" />
         <c:set var="month" value="${fn:length(monthRaw) == 1 ? '0' + monthRaw : monthRaw}" />
         <c:set var="day" value="${fn:length(dayRaw) == 1 ? '0' + dayRaw : dayRaw}" />
 
-        <c:set var="genderFull" value="${row.u_gender}" />
+        <c:set var="genderFull" value="${row.user_gender}" />
         <c:set var="genderShort" value="${fn:substring(genderFull, 0, 1)}" />
 
-        <form name="newMember" action="processUpdateMember.jsp" method="post" onsubmit="return checkForm()">
+        <form name="newMember" action="${pageContext.request.contextPath}/processUpdateMember" method="post" onsubmit="return checkForm()">
             <div class="mb-3 row">
                 <label class="col-sm-2">아이디</label>
                 <div class="col-sm-3">
-                    <input name="id" type="text" class="form-control" value="${row.u_id}" readonly>
+                    <input name="id" type="text" class="form-control" value="${row.user_id}" readonly>
                 </div>
             </div>
             <div class="mb-3 row">
                 <label class="col-sm-2">비밀번호</label>
                 <div class="col-sm-3">
-                    <input name="password" type="text" class="form-control" value="${row.u_password}">
+                    <input name="password" type="password" class="form-control" value="${row.user_password}">
                 </div>
             </div>
             <div class="mb-3 row">
@@ -71,7 +72,7 @@ String sessionId = (String) session.getAttribute("userId");
             <div class="mb-3 row">
                 <label class="col-sm-2">성명</label>
                 <div class="col-sm-3">
-                    <input name="name" type="text" class="form-control" value="${row.u_name}">
+                    <input name="name" type="text" class="form-control" value="${row.user_name}">
                 </div>
             </div>
             <div class="mb-3 row">
@@ -92,7 +93,10 @@ String sessionId = (String) session.getAttribute("userId");
                             <select name="birthmm" id="birthmm" class="form-select">
                                 <option value="">월</option>
                                 <c:forEach var="i" begin="1" end="12">
-                                    <c:set var="val" value="${i lt 10 ? '0' + i : i}" />
+                                    <c:choose>
+                                        <c:when test="${i lt 10}"><c:set var="val" value="0${i}" /></c:when>
+                                        <c:otherwise><c:set var="val" value="${i}" /></c:otherwise>
+                                    </c:choose>
                                     <option value="${val}">${i}</option>
                                 </c:forEach>
                             </select>
@@ -124,13 +128,13 @@ String sessionId = (String) session.getAttribute("userId");
             <div class="mb-3 row">
                 <label class="col-sm-2">전화번호</label>
                 <div class="col-sm-3">
-                    <input name="phone" type="text" class="form-control" value="${row.u_phone}">
+                    <input name="phone" type="text" class="form-control" value="${row.user_phone}">
                 </div>
             </div>
             <div class="mb-3 row">
                 <label class="col-sm-2">주소</label>
                 <div class="col-sm-5">
-                    <input name="address" type="text" class="form-control" value="${row.u_address}">
+                    <input name="address" type="text" class="form-control" value="${row.user_address}">
                 </div>
             </div>
             <div class="mb-3 row">

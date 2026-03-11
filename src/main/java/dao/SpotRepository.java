@@ -1,5 +1,6 @@
 package dao;
 
+import dto.AddSpotApplication;
 import dto.Spot;
 import java.util.ArrayList;
 import java.sql.*;
@@ -92,5 +93,49 @@ public class SpotRepository {
         }
 
         return spots;
+    }
+
+    public static void insertSpot(AddSpotApplication app) {
+        // category 숫자 문자열 → int 변환 (1~5)
+        int categoryId;
+        try {
+            categoryId = Integer.parseInt(app.getSpotCategory());
+        } catch (Exception e) {
+            categoryId = 1; // 기본값: 카페/음식점
+        }
+
+        String sql = """
+            INSERT INTO spots
+            (spot_name, latitude, longitude, radius_m, spot_description, spot_image, spot_category)
+            VALUES (?, ?, ?, 100.0, ?, ?, ?)
+        """;
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, app.getSpotName());
+            pstmt.setDouble(2, app.getSpotLatitude());
+            pstmt.setDouble(3, app.getSpotLongitude());
+            pstmt.setString(4, app.getSpotDescription());
+            pstmt.setString(5, app.getSpotImage() != null ? app.getSpotImage() : "");
+            pstmt.setInt(6, categoryId);
+
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteSpot(int spotId) {
+        String sql = "DELETE FROM spots WHERE spot_id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, spotId);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

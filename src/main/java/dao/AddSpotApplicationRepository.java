@@ -54,8 +54,8 @@ public class AddSpotApplicationRepository {
         String sql = """
         INSERT INTO add_spot_applications
         (user_id, spot_name, spot_latitude, spot_longitude,
-         spot_description, add_status, add_spot_created_at)
-        VALUES (?, ?, ?, ?, ?, ?, NOW())
+         spot_description, add_status, spot_category, spot_image, added_spot_address)
+        VALUES (?, ?, ?, ?, ?, 'PENDING', ?, ?, ?)
     """;
 
         try (Connection conn = DBUtil.getConnection();
@@ -66,12 +66,44 @@ public class AddSpotApplicationRepository {
             pstmt.setDouble(3, app.getSpotLatitude());
             pstmt.setDouble(4, app.getSpotLongitude());
             pstmt.setString(5, app.getSpotDescription());
-            pstmt.setString(6, app.getStatus());
+            pstmt.setString(6, app.getSpotCategory() != null ? app.getSpotCategory() : "cafe");
+            pstmt.setString(7, app.getSpotImage() != null ? app.getSpotImage() : "");
+            pstmt.setString(8, app.getSpotAddress() != null ? app.getSpotAddress() : "");
 
             pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static ArrayList<AddSpotApplication> getAllPending() {
+        ArrayList<AddSpotApplication> list = new ArrayList<>();
+        String sql = "SELECT * FROM add_spot_applications WHERE add_status = 'PENDING' ORDER BY add_spot_created_at DESC";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                AddSpotApplication app = new AddSpotApplication();
+                app.setApplicationId(rs.getInt("add_application_id"));
+                app.setUserId(rs.getString("user_id"));
+                app.setSpotName(rs.getString("spot_name"));
+                app.setSpotLatitude(rs.getDouble("spot_latitude"));
+                app.setSpotLongitude(rs.getDouble("spot_longitude"));
+                app.setSpotDescription(rs.getString("spot_description"));
+                app.setStatus(rs.getString("add_status"));
+                app.setSpotCategory(rs.getString("spot_category"));
+                app.setSpotImage(rs.getString("spot_image"));
+                app.setSpotAddress(rs.getString("added_spot_address"));
+                Timestamp ts = rs.getTimestamp("add_spot_created_at");
+                if (ts != null) app.setCreatedAt(ts.toLocalDateTime());
+                list.add(app);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
 
@@ -110,10 +142,11 @@ public class AddSpotApplicationRepository {
 
             while (rs.next()) {
                 AddSpotApplication addSpotApplication = new AddSpotApplication();
-                addSpotApplication.setApplicationId(rs.getInt("application_id"));
+                addSpotApplication.setApplicationId(rs.getInt("add_application_id"));
                 addSpotApplication.setUserId(rs.getString("user_id"));
                 addSpotApplication.setSpotName(rs.getString("spot_name"));
                 addSpotApplication.setSpotDescription(rs.getString("spot_description"));
+                addSpotApplication.setSpotCategory(rs.getString("spot_category"));
                 Timestamp ts = rs.getTimestamp("add_spot_created_at");
                 if (ts != null) {
                     addSpotApplication.setCreatedAt(ts.toLocalDateTime());
@@ -121,7 +154,7 @@ public class AddSpotApplicationRepository {
 
                 addSpotApplication.setSpotLatitude(rs.getDouble("spot_latitude"));
                 addSpotApplication.setSpotLongitude(rs.getDouble("spot_longitude"));
-                addSpotApplication.setStatus(rs.getString("add_spot_application_status"));
+                addSpotApplication.setStatus(rs.getString("add_status"));
                 addSpotApplications.add(addSpotApplication);
             }
         } catch (Exception e) {

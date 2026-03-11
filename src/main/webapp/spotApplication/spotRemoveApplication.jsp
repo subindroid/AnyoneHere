@@ -1,13 +1,13 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="dao.SpotRepository" %>
+<%@ page import="dto.Spot" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>AnyoneHere-AddSpotApplication</title>
-    <link rel="stylesheet" href="../../../resources/css/bootstrap.min.css" />
-    <script src="resources/js/validationApplicationSpot.js"></script>
+    <title>AnyoneHere - 장소 삭제 신청</title>
+    <link rel="stylesheet" href="../resources/css/bootstrap.min.css"/>
 </head>
 <body>
 <%
@@ -15,64 +15,77 @@
     if (userId == null) {
 %>
 <script>
-    alert("로그인을 해야 장소 등록 신청을 할 수 있습니다!");
+    alert("로그인을 해야 장소 삭제 신청을 할 수 있습니다!");
     location.href = "../member/loginMember.jsp";
 </script>
 <%
         return;
     }
+
+    String spotIdStr = request.getParameter("spotId");
+    if (spotIdStr == null || spotIdStr.isEmpty()) {
+        response.sendRedirect(request.getContextPath() + "/spot/spots.jsp");
+        return;
+    }
+
+    int spotId = Integer.parseInt(spotIdStr);
+    Spot spot = SpotRepository.getInstance().getSpotBySpotId(spotId);
+    if (spot == null) {
+        response.sendRedirect(request.getContextPath() + "/exceptionPages/exceptionNoSpot.jsp");
+        return;
+    }
 %>
-<fmt:setLocale value='<%=request.getParameter("language")%>' />
+<fmt:setLocale value="ko"/>
 <fmt:bundle basename="bundle.message">
     <div class="container py-4">
         <%@ include file="../common/menu.jsp" %>
 
         <div class="p-5 mb-4 bg-body-tertiary rounded-3">
             <div class="container-fluid py-5">
-                <h1 class="display-5 fw-bold">
-                    <fmt:message key="remove_spot_application_title" />
-                </h1>
-                <p class="col-md-8 fs-4">Spot Remove</p>
+                <h1 class="display-5 fw-bold">장소 삭제 신청</h1>
+                <p class="col-md-8 fs-4">Spot Remove Application</p>
             </div>
         </div>
 
         <div class="row align-items-md-stretch">
-            <div class="text-end">
-                <a href="?language=ko">Korean</a> | <a href="?language=en">English</a>
-                <a href="../member/logoutMember.jsp" class="btn btn-sm btn-success pull right">logout</a>
-            </div>
-
-            <form name="newApplicationSpot" action="processAddSpot.jsp" method="post"
-                  class="form-horizontal" enctype="multipart/form-data">
+            <form name="removeApplicationForm"
+                  action="${pageContext.request.contextPath}/processRemoveSpot"
+                  method="post"
+                  class="form-horizontal">
 
                 <div class="mb-3 row">
-                    <label class="col-sm-2"><fmt:message key="spotDescription" /></label>
-                    <div class="col-sm-3">
-              <textarea name="spot_description" id="spot_description" cols="10" rows="2"
-                        class="form-control" placeholder="10자 이상 적어주세요"></textarea>
+                    <label class="col-sm-2 col-form-label fw-bold">삭제 신청 장소</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" value="<%= spot.getSpotName() %>" readonly>
+                        <input type="hidden" name="spotId" value="<%= spotId %>">
                     </div>
                 </div>
 
-                <!-- 장소 사진(선택) -->
                 <div class="mb-3 row">
-                    <label class="col-sm-2 col-form-label"><fmt:message key="spotImage" /></label>
-                    <div class="col-sm-5">
-                        <input type="file" name="spotImage" id="spotImage" class="form-control">
+                    <label class="col-sm-2 col-form-label">삭제 사유</label>
+                    <div class="col-sm-6">
+                        <textarea name="remove_reason" id="remove_reason" rows="4"
+                                  class="form-control"
+                                  placeholder="삭제 사유를 10자 이상 입력해주세요"
+                                  required minlength="10"></textarea>
                     </div>
                 </div>
 
                 <div class="mb-3 row">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <input type="submit" class="btn btn-primary"
-                               value="<fmt:message key='button' />"
-                               onclick="CheckRemoveSpot()">
+                        <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('정말로 이 장소 삭제를 신청하시겠습니까?')">
+                            삭제 신청
+                        </button>
+                        <a href="${pageContext.request.contextPath}/spot/spot.jsp?spotId=<%= spotId %>"
+                           class="btn btn-secondary ms-2">취소</a>
                     </div>
                 </div>
             </form>
         </div>
+
+        <%@ include file="../common/footer.jsp" %>
     </div>
 </fmt:bundle>
-<jsp:include page="../common/footer.jsp" />
 </body>
 </html>
-
