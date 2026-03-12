@@ -16,11 +16,15 @@
     String day = request.getParameter("birthdd");
     String birth = String.format("%s-%02d-%02d", year, Integer.parseInt(month), Integer.parseInt(day));
 
-    String mail1 = request.getParameter("mail1");     // 폼에 추가 필요
-    String mail2 = request.getParameter("mail2");
+    String mail1 = request.getParameter("mail1");
+    String mail2Custom = request.getParameter("mail2");
+    String mail2Select = request.getParameter("mail2_select");
+    String mail2 = (mail2Custom != null && !mail2Custom.isEmpty()) ? mail2Custom : mail2Select;
     String mail = mail1 + "@" + mail2;
 
-    String phone = request.getParameter("phone");     // 폼에 추가 필요
+    String phone = request.getParameter("phone1") + "-"
+                 + request.getParameter("phone2") + "-"
+                 + request.getParameter("phone3");
     String address = request.getParameter("address");
 
     java.sql.Timestamp joinDate = new java.sql.Timestamp(System.currentTimeMillis());

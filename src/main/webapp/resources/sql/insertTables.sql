@@ -3,7 +3,7 @@ SHOW TABLE STATUS;
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS wishlist, reviews, spot_presence, location_logs,
-    profile, user_privacy_setting, spots, users, add_spot_applications,
+    profile, user_cars, user_privacy_setting, spots, users, add_spot_applications,
     user_current_location, spot_category;
 
 
@@ -38,6 +38,20 @@ CREATE TABLE profile
     PRIMARY KEY (user_id),
     FOREIGN KEY (user_id) REFERENCES users (user_id)
         ON DELETE CASCADE
+) DEFAULT CHARSET = utf8mb4;
+
+-- 차량 정보 (유저당 여러 대 등록 가능)
+CREATE TABLE user_cars
+(
+    car_id      INT AUTO_INCREMENT PRIMARY KEY,
+    user_id     VARCHAR(30)  NOT NULL,
+    car_brand   VARCHAR(30),           -- 제조사 (현대, 기아 등)
+    car_model   VARCHAR(30),           -- 모델명 (아반떼, K5 등)
+    car_year    INT,                   -- 연식
+    car_image   VARCHAR(100),          -- 차량 사진
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 ) DEFAULT CHARSET = utf8mb4;
 
 -- 사용자의 위치 로그 원본 데이터 (집계 전 raw 데이터)

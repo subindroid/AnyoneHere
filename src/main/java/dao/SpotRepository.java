@@ -7,17 +7,8 @@ import java.sql.*;
 import util.DBUtil;
 
 public class SpotRepository {
-    private static SpotRepository instance = new SpotRepository();
 
-    public static SpotRepository getInstance() {
-        return instance;
-    }
-
-    public SpotRepository() {
-        // TODO Auto-generated constructor stub
-    }
-
-    public Spot getSpotBySpotId(int spotId) {
+    public static Spot getSpotBySpotId(int spotId) {
         Spot spot = null;
         Connection conn = null;
         PreparedStatement ps = null;

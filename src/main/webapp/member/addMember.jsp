@@ -111,9 +111,31 @@
 			</div>		
 			<div class="mb-3 row">
 				<label class="col-sm-2">전화번호</label>
-				<div class="col-sm-3">
-					<input name="phone" type="text" class="form-control" placeholder="phone" >
-
+				<div class="col-sm-10">
+					<div class="row align-items-center">
+						<div class="col-sm-2">
+							<select name="phone1" class="form-select">
+								<option value="010">010</option>
+								<option value="011">011</option>
+								<option value="012">012</option>
+								<option value="013">013</option>
+								<option value="014">014</option>
+								<option value="015">015</option>
+								<option value="016">016</option>
+								<option value="017">017</option>
+								<option value="018">018</option>
+								<option value="019">019</option>
+							</select>
+						</div>
+						<div class="col-auto">-</div>
+						<div class="col-sm-2">
+							<input type="text" name="phone2" maxlength="4" class="form-control" placeholder="0000">
+						</div>
+						<div class="col-auto">-</div>
+						<div class="col-sm-2">
+							<input type="text" name="phone3" maxlength="4" class="form-control" placeholder="0000">
+						</div>
+					</div>
 				</div>
 			</div>
 

@@ -35,8 +35,7 @@
         int spotId = Integer.parseInt(spotIdString);
         System.out.println(">>> spot.jsp spotId(int) = " + spotId);
 
-        SpotRepository repo = SpotRepository.getInstance();   // 인스턴스 메소드로 바꾼 상태라 가정
-        Spot spot = repo.getSpotBySpotId(spotId);
+        Spot spot = SpotRepository.getSpotBySpotId(spotId);
         System.out.println(">>> spot.jsp spot = " + spot);
 
         if (spot == null) {

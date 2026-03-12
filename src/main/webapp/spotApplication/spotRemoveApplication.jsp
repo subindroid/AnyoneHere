@@ -29,7 +29,7 @@
     }
 
     int spotId = Integer.parseInt(spotIdStr);
-    Spot spot = SpotRepository.getInstance().getSpotBySpotId(spotId);
+    Spot spot = SpotRepository.getSpotBySpotId(spotId);
     if (spot == null) {
         response.sendRedirect(request.getContextPath() + "/exceptionPages/exceptionNoSpot.jsp");
         return;

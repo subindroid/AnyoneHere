@@ -66,6 +66,10 @@
 							</svg> 찜목록</a>
 						</li>
 						<li class="nav-item"><a class="nav-link"
+											   href="${pageContext.request.contextPath}/profile/myProfile.jsp">
+							내 프로필</a>
+						</li>
+						<li class="nav-item"><a class="nav-link"
 											   href="${pageContext.request.contextPath}/spotApplication/myApplications.jsp">
 							나의 신청 내역</a>
 						</li>

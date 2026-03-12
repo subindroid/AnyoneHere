@@ -50,6 +50,11 @@ String sessionId = (String) session.getAttribute("userId");
         <c:set var="genderFull" value="${row.user_gender}" />
         <c:set var="genderShort" value="${fn:substring(genderFull, 0, 1)}" />
 
+        <c:set var="phone" value="${row.user_phone}" />
+        <c:set var="phone1" value="${fn:split(phone, '-')[0]}" />
+        <c:set var="phone2" value="${fn:split(phone, '-')[1]}" />
+        <c:set var="phone3" value="${fn:split(phone, '-')[2]}" />
+
         <form name="newMember" action="${pageContext.request.contextPath}/processUpdateMember" method="post" onsubmit="return checkForm()">
             <div class="mb-3 row">
                 <label class="col-sm-2">아이디</label>
@@ -127,8 +132,31 @@ String sessionId = (String) session.getAttribute("userId");
             </div>
             <div class="mb-3 row">
                 <label class="col-sm-2">전화번호</label>
-                <div class="col-sm-3">
-                    <input name="phone" type="text" class="form-control" value="${row.user_phone}">
+                <div class="col-sm-10">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2">
+                            <select name="phone1" id="phone1Select" class="form-select">
+                                <option value="010">010</option>
+                                <option value="011">011</option>
+                                <option value="012">012</option>
+                                <option value="013">013</option>
+                                <option value="014">014</option>
+                                <option value="015">015</option>
+                                <option value="016">016</option>
+                                <option value="017">017</option>
+                                <option value="018">018</option>
+                                <option value="019">019</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">-</div>
+                        <div class="col-sm-2">
+                            <input type="text" name="phone2" maxlength="4" class="form-control" value="${phone2}">
+                        </div>
+                        <div class="col-auto">-</div>
+                        <div class="col-sm-2">
+                            <input type="text" name="phone3" maxlength="4" class="form-control" value="${phone3}">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="mb-3 row">
@@ -153,6 +181,17 @@ String sessionId = (String) session.getAttribute("userId");
 document.addEventListener("DOMContentLoaded", function () {
     const mail2 = "${mail2}";
     const month = "${month}";
+    const phone1 = "${phone1}";
+
+    const phone1Select = document.getElementById("phone1Select");
+    if (phone1Select) {
+        for (let i = 0; i < phone1Select.options.length; i++) {
+            if (phone1Select.options[i].value === phone1) {
+                phone1Select.options[i].selected = true;
+                break;
+            }
+        }
+    }
 
     const mailSelect = document.getElementById("mail2");
     if (mailSelect) {

@@ -35,8 +35,18 @@ public class UpdateMemberServlet extends HttpServlet {
         String mail2 = request.getParameter("mail2");
         String email = mail1 + "@" + mail2;
 
-        String phone = request.getParameter("phone");
+        String phone = request.getParameter("phone1") + "-"
+                     + request.getParameter("phone2") + "-"
+                     + request.getParameter("phone3");
         String address = request.getParameter("address");
+
+        // 비밀번호가 빈 값이면 기존 비밀번호 유지
+        if (password == null || password.isEmpty()) {
+            User existing = UserRepository.getUserById(id);
+            if (existing != null) {
+                password = existing.getUserPassword();
+            }
+        }
 
         User user = new User();
 
