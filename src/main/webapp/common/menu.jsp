@@ -26,6 +26,10 @@
 										href="<c:url value="/spot/spots.jsp"/>">
 					스팟 보기</a>
 				</li>
+				<li class="nav-item"><a class="nav-link"
+										href="${pageContext.request.contextPath}/community/board.jsp">
+					커뮤니티</a>
+				</li>
 
 				<c:choose>
 					<c:when test="${empty sessionScope.userId}">

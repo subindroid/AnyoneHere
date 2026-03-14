@@ -7,7 +7,7 @@
   <meta charset="UTF-8">
   <title>AnyoneHere-AddSpotApplication</title>
   <link rel="stylesheet" href="../../../resources/css/bootstrap.min.css" />
-  <script src="resources/js/validationApplicationSpot.js"></script>
+  <script src="../resources/js/validationApplicationSpot.js"></script>
 </head>
 <body>
 <%
@@ -43,7 +43,7 @@
       </div>
 
       <form name="newApplicationSpot" action="${pageContext.request.contextPath}/processAddSpot" method="post"
-            class="form-horizontal" enctype="multipart/form-data">
+            class="form-horizontal" enctype="multipart/form-data" onsubmit="return CheckAddSpot()">
 
         <div class="mb-3 row">
           <label class="col-sm-2"><fmt:message key="spotName" /></label>
@@ -97,8 +97,7 @@
         <div class="mb-3 row">
           <div class="col-sm-offset-2 col-sm-10">
             <input type="submit" class="btn btn-primary"
-                   value="<fmt:message key='button' />"
-                   onclick="CheckAddSpot()">
+                   value="<fmt:message key='button' />">
           </div>
         </div>
       </form>

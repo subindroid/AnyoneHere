@@ -46,7 +46,7 @@
             </div>
 
             <!-- 리뷰 작성 폼 -->
-            <form name="newReview" action="${pageContext.request.contextPath}/processAddReview" method="post" class="form-horizontal">
+            <form name="newReview" action="${pageContext.request.contextPath}/processAddReview" method="post" class="form-horizontal" onsubmit="return validateReviewForm()">
 
 
                 <input type="hidden" name="spotId" value="<%= spotId %>" />

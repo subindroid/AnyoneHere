@@ -4,7 +4,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS wishlist, reviews, spot_presence, location_logs,
     profile, user_cars, user_privacy_setting, spots, users, add_spot_applications,
-    user_current_location, spot_category;
+    user_current_location, spot_category, remove_spot_applications,
+    posts, post_reports, post_likes, post_reports, post_comments;
 
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -208,4 +209,72 @@ CREATE TABLE user_current_location
 
 
 -- 추후 추가 기능 관련 table
--- 게시판, 채팅 관련 DB...
+CREATE TABLE posts
+(
+    post_id    INT AUTO_INCREMENT PRIMARY KEY,
+    user_id    VARCHAR(30)  NOT NULL,
+    category   VARCHAR(20)  NOT NULL,              -- FREE, REVIEW, QUESTION, RECOMMEND
+    title      VARCHAR(100) NOT NULL,
+    content    TEXT         NOT NULL,
+    view_count INT       DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN   DEFAULT FALSE,
+
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+    CHECK (category IN ('FREE', 'REVIEW', 'QUESTION', 'RECOMMEND'))
+) DEFAULT CHARSET = utf8mb4;
+
+-- 게시글 첨부 이미지
+CREATE TABLE post_images
+(
+    image_id   INT AUTO_INCREMENT PRIMARY KEY,
+    post_id    INT          NOT NULL,
+    image_path VARCHAR(100) NOT NULL,
+    sort_order INT DEFAULT 0,
+
+    FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE
+) DEFAULT CHARSET = utf8mb4;
+
+-- 댓글
+CREATE TABLE post_comments
+(
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id    INT         NOT NULL,
+    user_id    VARCHAR(30) NOT NULL,
+    content    TEXT        NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN   DEFAULT FALSE,
+
+    FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
+) DEFAULT CHARSET = utf8mb4;
+
+-- 좋아요
+CREATE TABLE post_likes
+(
+    like_id    INT AUTO_INCREMENT PRIMARY KEY,
+    post_id    INT         NOT NULL,
+    user_id    VARCHAR(30) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+    UNIQUE KEY uk_post_like (post_id, user_id)
+) DEFAULT CHARSET = utf8mb4;
+
+-- 게시글 신고
+CREATE TABLE post_reports
+(
+    report_id     INT AUTO_INCREMENT PRIMARY KEY,
+    post_id       INT          NOT NULL,
+    reporter_id   VARCHAR(30)  NOT NULL,
+    reason        VARCHAR(300) NOT NULL,
+    report_status VARCHAR(20) DEFAULT 'PENDING',
+    created_at    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE,
+    FOREIGN KEY (reporter_id) REFERENCES users (user_id) ON DELETE CASCADE,
+    UNIQUE KEY uk_post_reporter (post_id, reporter_id),
+    CHECK (report_status IN ('PENDING', 'REVIEWED', 'DISMISSED'))
+) DEFAULT CHARSET = utf8mb4;

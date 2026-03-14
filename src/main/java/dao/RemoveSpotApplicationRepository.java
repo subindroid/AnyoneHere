@@ -66,6 +66,20 @@ public class RemoveSpotApplicationRepository {
     }
 
 
+    /** 트랜잭션용: 외부에서 받은 Connection으로 실행. autoCommit/close는 호출자가 관리. */
+    public static void updateStatus(int applicationId, String status, Connection conn) throws java.sql.SQLException {
+        String sql = """
+        UPDATE remove_spot_applications
+        SET remove_status = ?
+        WHERE remove_application_id = ?
+    """;
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            pstmt.setInt(2, applicationId);
+            pstmt.executeUpdate();
+        }
+    }
+
     public static void updateStatus(int applicationId, String status) {
         String sql = """
         UPDATE remove_spot_applications

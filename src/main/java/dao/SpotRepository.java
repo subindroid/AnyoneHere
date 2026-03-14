@@ -86,6 +86,32 @@ public class SpotRepository {
         return spots;
     }
 
+    /** 트랜잭션용: 외부에서 받은 Connection으로 실행. autoCommit/close는 호출자가 관리. */
+    public static void insertSpot(AddSpotApplication app, Connection conn) throws SQLException {
+        int categoryId;
+        try {
+            categoryId = Integer.parseInt(app.getSpotCategory());
+        } catch (Exception e) {
+            categoryId = 1;
+        }
+
+        String sql = """
+            INSERT INTO spots
+            (spot_name, latitude, longitude, radius_m, spot_description, spot_image, spot_category)
+            VALUES (?, ?, ?, 100.0, ?, ?, ?)
+        """;
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, app.getSpotName());
+            pstmt.setDouble(2, app.getSpotLatitude());
+            pstmt.setDouble(3, app.getSpotLongitude());
+            pstmt.setString(4, app.getSpotDescription());
+            pstmt.setString(5, app.getSpotImage() != null ? app.getSpotImage() : "");
+            pstmt.setInt(6, categoryId);
+            pstmt.executeUpdate();
+        }
+    }
+
     public static void insertSpot(AddSpotApplication app) {
         // category 숫자 문자열 → int 변환 (1~5)
         int categoryId;
@@ -114,6 +140,15 @@ public class SpotRepository {
             pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /** 트랜잭션용: 외부에서 받은 Connection으로 실행. autoCommit/close는 호출자가 관리. */
+    public static void deleteSpot(int spotId, Connection conn) throws SQLException {
+        String sql = "DELETE FROM spots WHERE spot_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, spotId);
+            pstmt.executeUpdate();
         }
     }
 

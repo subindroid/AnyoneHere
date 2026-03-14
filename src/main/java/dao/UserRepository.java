@@ -2,6 +2,7 @@ package dao;
 
 import dto.User;
 import util.DBUtil;
+import util.PasswordUtil;
 
 import java.sql.*;
 
@@ -49,10 +50,15 @@ public class UserRepository {
         return user;
     }
 
-    public static boolean validateUser(String id, String password) {
+    /**
+     * 로그인 검증. 성공 시 User 객체 반환, 실패 시 null 반환.
+     * Servlet에서 이 결과를 재사용해 DB 이중 조회를 방지함.
+     */
+    public static User validateUser(String id, String password) {
+        if (id == null || password == null) return null;
         User user = getUserById(id);
-        return user != null && password != null &&
-                password.equals(user.getUserPassword());
+        if (user == null) return null;
+        return PasswordUtil.verify(password, user.getUserPassword()) ? user : null;
     }
 
     public static void updateUser(User user) {
@@ -98,7 +104,11 @@ public class UserRepository {
             DBUtil.close(null, ps, conn);
         }
     }
-    public static void addUser(User user) {
+    /**
+     * 회원가입. 성공 시 true, 아이디/이메일 중복 등 실패 시 false 반환.
+     * 비밀번호는 호출 전에 PasswordUtil.hash()로 해시해야 함.
+     */
+    public static boolean addUser(User user) {
 
         Connection conn = null;
         PreparedStatement ps = null;
@@ -130,9 +140,11 @@ public class UserRepository {
             ps.setTimestamp(9, Timestamp.valueOf(user.getCreatedAt().atStartOfDay()));
 
             ps.executeUpdate();
+            return true;
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         } finally {
             DBUtil.close(null, ps, conn);
         }
