@@ -25,12 +25,43 @@ public class AddReviewServlet extends HttpServlet {
             return;
         }
 
-        int spotId = Integer.parseInt(request.getParameter("spotId"));
-        double rating = Double.parseDouble(request.getParameter("rating"));
+        int spotId;
+        try {
+            spotId = Integer.parseInt(request.getParameter("spotId"));
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/spot/spots.jsp");
+            return;
+        }
+
+        if (ReviewRepository.hasReviewed(userId, spotId)) {
+            response.sendRedirect(request.getContextPath()
+                    + "/review/reviews.jsp?spotId=" + spotId + "&error=duplicate");
+            return;
+        }
+
+        double rating;
+        try {
+            rating = Double.parseDouble(request.getParameter("rating"));
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath()
+                    + "/review/addReview.jsp?spotId=" + spotId + "&error=invalid");
+            return;
+        }
+        if (rating < 0 || rating > 5) {
+            response.sendRedirect(request.getContextPath()
+                    + "/review/addReview.jsp?spotId=" + spotId + "&error=invalid");
+            return;
+        }
+
         String content = request.getParameter("content");
+        if (content == null || content.isBlank()) {
+            response.sendRedirect(request.getContextPath()
+                    + "/review/addReview.jsp?spotId=" + spotId + "&error=empty");
+            return;
+        }
 
-        ReviewRepository.addReview(userId, spotId, content, rating);
+        ReviewRepository.addReview(userId, spotId, content.trim(), rating);
 
-        response.sendRedirect(request.getContextPath() + "/spot/spot.jsp?spotId=" + spotId);
+        response.sendRedirect(request.getContextPath() + "/review/reviews.jsp?spotId=" + spotId);
     }
 }

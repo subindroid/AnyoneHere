@@ -9,6 +9,7 @@ public class Review implements Serializable {
 
     private int reviewId;               // review_id
     private String userId;              // user_id
+    private String authorName;          // profile.nickname (JOIN용)
     private int spotId;                 // spot_id
     private String reviewText;          // review_text
     private LocalDateTime reviewCreatedAt;  // review_created_at
@@ -22,6 +23,14 @@ public class Review implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public int getSpotId() {

@@ -22,6 +22,11 @@ public class LoginMemberServlet extends HttpServlet {
         String id       = request.getParameter("id");
         String password = request.getParameter("password");
 
+        if (id == null || id.isBlank() || password == null || password.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/member/loginMember.jsp?error=true");
+            return;
+        }
+
         // validateUser가 User 객체를 반환 — DB 조회 1회로 해결
         User user = UserRepository.validateUser(id, password);
 

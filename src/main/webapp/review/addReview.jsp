@@ -6,14 +6,15 @@
 <head>
     <meta charset="UTF-8">
     <title>AnyoneHere - 장소 리뷰 작성</title>
-    <link rel="stylesheet" href="../../../resources/css/bootstrap.min.css" />
-    <script type="text/javascript" src="../../../resources/js/validationReviewSpot.js"></script>
+    <link rel="stylesheet" href="../resources/css/bootstrap.min.css" />
+    <script type="text/javascript" src="../resources/js/validationReviewSpot.js"></script>
 </head>
 <body>
 <%
 
     String userId = (String) session.getAttribute("userId");
     String spotId = request.getParameter("spotId");
+    String csrfToken = util.CsrfUtil.getOrCreateToken(session);
     if (userId == null) {
 %>
 
@@ -49,8 +50,8 @@
             <form name="newReview" action="${pageContext.request.contextPath}/processAddReview" method="post" class="form-horizontal" onsubmit="return validateReviewForm()">
 
 
-                <input type="hidden" name="spotId" value="<%= spotId %>" />
-                <input type="hidden" name="userId" value="<%= userId %>" />
+                <input type="hidden" name="spotId" value="<%= util.HtmlUtil.escape(spotId) %>" />
+                <input type="hidden" name="userId" value="<%= util.HtmlUtil.escape(userId) %>" />
 
                 <div class="mb-3 row">
                     <label class="col-sm-2 col-form-label">별점</label>
@@ -75,6 +76,7 @@
 
                 <div class="mb-3 row">
                     <div class="offset-sm-2 col-sm-10">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <input type="submit" class="btn btn-primary" value="리뷰 등록">
                     </div>
                 </div>

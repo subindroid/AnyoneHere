@@ -23,6 +23,11 @@ public class AddMemberServlet extends HttpServlet {
 
         String id = request.getParameter("id");
         String password = request.getParameter("password");
+
+        if (password == null || password.length() < 8) {
+            response.sendRedirect(request.getContextPath() + "/member/addMember.jsp?error=password");
+            return;
+        }
         String name = request.getParameter("name");
         String gender = request.getParameter("gender");
 
@@ -43,11 +48,19 @@ public class AddMemberServlet extends HttpServlet {
         String mail2Custom = request.getParameter("mail2");
         String mail2Select = request.getParameter("mail2_select");
         String mail2 = (mail2Custom != null && !mail2Custom.isEmpty()) ? mail2Custom : mail2Select;
-        String email = mail1 + "@" + mail2;
 
-        String phone = request.getParameter("phone1") + "-"
-                     + request.getParameter("phone2") + "-"
-                     + request.getParameter("phone3");
+        if (mail1 == null || mail1.isBlank() || mail2 == null || mail2.isBlank()) {
+            response.sendRedirect(request.getContextPath() + "/member/addMember.jsp?error=email");
+            return;
+        }
+        String email = mail1.trim() + "@" + mail2.trim();
+
+        String p1 = request.getParameter("phone1");
+        String p2 = request.getParameter("phone2");
+        String p3 = request.getParameter("phone3");
+        String phone = (p1 != null ? p1 : "") + "-"
+                     + (p2 != null ? p2 : "") + "-"
+                     + (p3 != null ? p3 : "");
         String address = request.getParameter("address");
 
         User user = new User();

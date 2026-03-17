@@ -21,7 +21,9 @@
     </div>
 
     <!-- 회원가입 폼 -->
+    <%  String csrfToken = util.CsrfUtil.getOrCreateToken(session); %>
     <form name="newMember" action="${pageContext.request.contextPath}/processAddMember" method="post" onsubmit="return validateSignInForm()">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <!-- 아이디, 비밀번호, 비밀번호 확인, 이름 등 기존 폼은 그대로 유지 -->
         <div class="mb-3 row">
             <label class="col-sm-2">아이디</label>
@@ -38,7 +40,7 @@
         <div class="mb-3 row">
             <label class="col-sm-2">비밀번호확인</label>
             <div class="col-sm-3">
-                <input name="password_confirm" type="text" class="form-control" placeholder="password confirm">
+                <input name="password_confirm" type="password" class="form-control" placeholder="password confirm">
             </div>
         </div>
         <div class="mb-3 row">

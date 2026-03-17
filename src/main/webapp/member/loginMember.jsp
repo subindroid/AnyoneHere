@@ -29,8 +29,9 @@
 					out.println("</div>");
 				}
 			%>
+            <% String csrfToken = util.CsrfUtil.getOrCreateToken(session); %>
   			<form class="form-signin" action="${pageContext.request.contextPath}/processLoginMember" method="post">
-  
+  			    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     			<div class="form-floating mb-3 row">     
       				<input type="text" class="form-control" name='id' id="floatingInput" placeholder="ID" required autofocus>
       				<label for="floatingInput">ID</label>      

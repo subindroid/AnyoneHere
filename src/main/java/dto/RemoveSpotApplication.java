@@ -59,6 +59,10 @@ public class RemoveSpotApplication {
 
     private LocalDateTime createdAt; // remove_spot_created_at
     private String spotName;         // spots.spot_name (JOIN용)
+    private String rejectReason;     // reject_reason
+
+    public String getRejectReason() { return rejectReason; }
+    public void setRejectReason(String rejectReason) { this.rejectReason = rejectReason; }
 
     public String getSpotName() {
         return spotName;

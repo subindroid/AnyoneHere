@@ -11,37 +11,26 @@ import java.util.ArrayList;
 import java.sql.Timestamp;
 public class RemoveSpotApplicationRepository {
     public static RemoveSpotApplication getRemoveApplicationByRemoveId(int applicationId) {
-        RemoveSpotApplication removeSpotApplication = null;
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DBUtil.getConnection();
-            String sql = "SELECT * FROM remove_spot_applications WHERE remove_application_id = ?";
-            ps = conn.prepareStatement(sql);
+        String sql = "SELECT * FROM remove_spot_applications WHERE remove_application_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, applicationId);
-            rs = ps.executeQuery();
-
-            if (rs.next()) {
-                removeSpotApplication = new RemoveSpotApplication();
-                removeSpotApplication.setSpotId(rs.getInt("spot_id"));
-                removeSpotApplication.setApplicationId(rs.getInt("remove_application_id"));
-                removeSpotApplication.setRemoveReason(rs.getString("remove_reason"));
-                removeSpotApplication.setStatus(rs.getString("remove_status"));
-                Timestamp ts = rs.getTimestamp("remove_spot_created_at");
-                if (ts != null) {
-                    removeSpotApplication.setCreatedAt(ts.toLocalDateTime());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    RemoveSpotApplication app = new RemoveSpotApplication();
+                    app.setSpotId(rs.getInt("spot_id"));
+                    app.setApplicationId(rs.getInt("remove_application_id"));
+                    app.setRemoveReason(rs.getString("remove_reason"));
+                    app.setStatus(rs.getString("remove_status"));
+                    Timestamp ts = rs.getTimestamp("remove_spot_created_at");
+                    if (ts != null) app.setCreatedAt(ts.toLocalDateTime());
+                    return app;
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            DBUtil.close(rs, ps, conn);
         }
-
-        return removeSpotApplication;
+        return null;
     }
 
     public static void insert(RemoveSpotApplication app) {
@@ -68,11 +57,7 @@ public class RemoveSpotApplicationRepository {
 
     /** 트랜잭션용: 외부에서 받은 Connection으로 실행. autoCommit/close는 호출자가 관리. */
     public static void updateStatus(int applicationId, String status, Connection conn) throws java.sql.SQLException {
-        String sql = """
-        UPDATE remove_spot_applications
-        SET remove_status = ?
-        WHERE remove_application_id = ?
-    """;
+        String sql = "UPDATE remove_spot_applications SET remove_status = ? WHERE remove_application_id = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, status);
             pstmt.setInt(2, applicationId);
@@ -81,17 +66,17 @@ public class RemoveSpotApplicationRepository {
     }
 
     public static void updateStatus(int applicationId, String status) {
-        String sql = """
-        UPDATE remove_spot_applications
-        SET remove_status = ?
-        WHERE remove_application_id = ?
-    """;
+        updateStatus(applicationId, status, (String) null);
+    }
 
+    /** 거절 사유 포함 상태 변경 */
+    public static void updateStatus(int applicationId, String status, String rejectReason) {
+        String sql = "UPDATE remove_spot_applications SET remove_status = ?, reject_reason = ? WHERE remove_application_id = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setString(1, status);
-            pstmt.setInt(2, applicationId);
+            pstmt.setString(2, rejectReason);
+            pstmt.setInt(3, applicationId);
             pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -153,6 +138,7 @@ public class RemoveSpotApplicationRepository {
                     app.setRemoveReason(rs.getString("remove_reason"));
                     app.setStatus(rs.getString("remove_status"));
                     app.setSpotName(rs.getString("spot_name"));
+                    app.setRejectReason(rs.getString("reject_reason"));
                     Timestamp ts = rs.getTimestamp("remove_spot_created_at");
                     if (ts != null) app.setCreatedAt(ts.toLocalDateTime());
                     list.add(app);

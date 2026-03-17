@@ -9,59 +9,154 @@ import util.DBUtil;
 public class SpotRepository {
 
     public static Spot getSpotBySpotId(int spotId) {
-        Spot spot = null;
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DBUtil.getConnection();
-            System.out.println(">>> DAO conn success: " + (conn != null));
-
-            String sql = "SELECT * FROM spots WHERE spot_id = ?";
-            ps = conn.prepareStatement(sql);
+        String sql = "SELECT * FROM spots WHERE spot_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, spotId);
-            rs = ps.executeQuery();
-
-            if (rs.next()) {  // 두 번째 rs.next() 호출
-                spot = new Spot();
-                spot.setSpotId(rs.getInt("spot_id"));
-                spot.setSpotName(rs.getString("spot_name"));
-                spot.setSpotDescription(rs.getString("spot_description"));
-                spot.setSpotLatitude(rs.getDouble("latitude"));
-                spot.setSpotLongitude(rs.getDouble("longitude"));
-                spot.setRadiusM(rs.getDouble("radius_m"));
-                spot.setSpotCategory(rs.getString("spot_category"));
-                spot.setSpotImage(rs.getString("spot_image"));
-                System.out.println(">>> DAO found spot: " + spot.getSpotName());
-            } else {
-                System.out.println(">>> DAO NO DATA for spotId: " + spotId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Spot spot = new Spot();
+                    spot.setSpotId(rs.getInt("spot_id"));
+                    spot.setSpotName(rs.getString("spot_name"));
+                    spot.setSpotDescription(rs.getString("spot_description"));
+                    spot.setSpotLatitude(rs.getDouble("latitude"));
+                    spot.setSpotLongitude(rs.getDouble("longitude"));
+                    spot.setRadiusM(rs.getDouble("radius_m"));
+                    spot.setSpotCategory(rs.getString("spot_category"));
+                    spot.setSpotImage(rs.getString("spot_image"));
+                    return spot;
+                }
             }
-
         } catch (Exception e) {
-            System.out.println(">>> DAO Exception: " + e.getMessage());
             e.printStackTrace();
-        } finally {
-            DBUtil.close(rs, ps, conn);
         }
-
-        System.out.println(">>> DAO return spot: " + spot);
-        return spot;
+        return null;
     }
 
 
 
+    private static final int SPOT_PAGE_SIZE = 12;
+
+    /** 카테고리 + 키워드 + 페이지 지원 */
+    public static ArrayList<Spot> getSpotsByFilter(String category, String keyword, int page) {
+        if (page < 1) page = 1;
+        ArrayList<Spot> spots = new ArrayList<>();
+        boolean hasCategory = (category != null && !category.isEmpty());
+        boolean hasKeyword  = (keyword  != null && !keyword.trim().isEmpty());
+
+        StringBuilder sql = new StringBuilder("SELECT * FROM spots WHERE 1=1");
+        if (hasCategory) sql.append(" AND spot_category = ?");
+        if (hasKeyword)  sql.append(" AND (spot_name LIKE ? OR spot_description LIKE ?)");
+        sql.append(" ORDER BY spot_id DESC LIMIT ? OFFSET ?");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int idx = 1;
+            if (hasCategory) ps.setString(idx++, category);
+            if (hasKeyword) {
+                String like = "%" + keyword.trim() + "%";
+                ps.setString(idx++, like);
+                ps.setString(idx++, like);
+            }
+            ps.setInt(idx++, SPOT_PAGE_SIZE);
+            ps.setInt(idx,   (page - 1) * SPOT_PAGE_SIZE);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Spot spot = new Spot();
+                    spot.setSpotId(rs.getInt("spot_id"));
+                    spot.setSpotName(rs.getString("spot_name"));
+                    spot.setSpotDescription(rs.getString("spot_description"));
+                    spot.setSpotLatitude(rs.getDouble("latitude"));
+                    spot.setSpotLongitude(rs.getDouble("longitude"));
+                    spot.setSpotCategory(rs.getString("spot_category"));
+                    spot.setSpotImage(rs.getString("spot_image"));
+                    spots.add(spot);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return spots;
+    }
+
+    /** 페이지네이션용 전체 스팟 수 */
+    public static int getSpotCount(String category, String keyword) {
+        boolean hasCategory = (category != null && !category.isEmpty());
+        boolean hasKeyword  = (keyword  != null && !keyword.trim().isEmpty());
+
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM spots WHERE 1=1");
+        if (hasCategory) sql.append(" AND spot_category = ?");
+        if (hasKeyword)  sql.append(" AND (spot_name LIKE ? OR spot_description LIKE ?)");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int idx = 1;
+            if (hasCategory) ps.setString(idx++, category);
+            if (hasKeyword) {
+                String like = "%" + keyword.trim() + "%";
+                ps.setString(idx++, like);
+                ps.setString(idx,   like);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /** 카테고리 필터 + 키워드 검색 지원. null/빈값이면 전체 조회 (페이지 없는 버전 - 하위 호환) */
+    public static ArrayList<Spot> getSpotsByFilter(String category, String keyword) {
+        ArrayList<Spot> spots = new ArrayList<>();
+        boolean hasCategory = (category != null && !category.isEmpty() && !"ALL".equals(category));
+        boolean hasKeyword  = (keyword  != null && !keyword.trim().isEmpty());
+
+        StringBuilder sql = new StringBuilder("SELECT * FROM spots WHERE 1=1");
+        if (hasCategory) sql.append(" AND spot_category = ?");
+        if (hasKeyword)  sql.append(" AND (spot_name LIKE ? OR spot_description LIKE ?)");
+        sql.append(" ORDER BY spot_id DESC");
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int idx = 1;
+            if (hasCategory) ps.setString(idx++, category);
+            if (hasKeyword) {
+                String like = "%" + keyword.trim() + "%";
+                ps.setString(idx++, like);
+                ps.setString(idx,   like);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Spot spot = new Spot();
+                    spot.setSpotId(rs.getInt("spot_id"));
+                    spot.setSpotName(rs.getString("spot_name"));
+                    spot.setSpotDescription(rs.getString("spot_description"));
+                    spot.setSpotLatitude(rs.getDouble("latitude"));
+                    spot.setSpotLongitude(rs.getDouble("longitude"));
+                    spot.setSpotCategory(rs.getString("spot_category"));
+                    spot.setSpotImage(rs.getString("spot_image"));
+                    spots.add(spot);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return spots;
+    }
+
     public static ArrayList<Spot> getAllSpots() {
         ArrayList<Spot> spots = new ArrayList<>();
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM spots";
 
-        try {
-            conn = DBUtil.getConnection();
-            String sql = "SELECT * FROM spots";
-            ps = conn.prepareStatement(sql);
-            rs = ps.executeQuery();
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Spot spot = new Spot();
@@ -72,15 +167,10 @@ public class SpotRepository {
                 spot.setSpotLongitude(rs.getDouble("longitude"));
                 spot.setSpotCategory(rs.getString("spot_category"));
                 spot.setSpotImage(rs.getString("spot_image"));
-
                 spots.add(spot);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try { if (rs != null) rs.close(); } catch (Exception e) {}
-            try { if (ps != null) ps.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
         }
 
         return spots;

@@ -1,32 +1,51 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="dao.UserRepository" %>
+<%@ page import="dto.User" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
 <html>
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../resources/css/bootstrap.min.css"/>
     <title>회원 수정</title>
 </head>
 <body>
-
 <%
-String sessionId = (String) session.getAttribute("userId");
+    String sessionId = (String) session.getAttribute("userId");
+    if (sessionId == null) {
+        response.sendRedirect(request.getContextPath() + "/member/loginMember.jsp");
+        return;
+    }
+
+    User user = UserRepository.getUserById(sessionId);
+    if (user == null) {
+        response.sendRedirect(request.getContextPath() + "/index.jsp");
+        return;
+    }
+
+    String csrfToken = util.CsrfUtil.getOrCreateToken(session);
+
+    // 이메일 분리
+    String email = user.getUserEmail() != null ? user.getUserEmail() : "";
+    String[] emailParts = email.contains("@") ? email.split("@") : new String[]{email, ""};
+    String mail1 = emailParts[0];
+    String mail2 = emailParts.length > 1 ? emailParts[1] : "";
+
+    // 생년월일 분리
+    String birthStr = user.getUserBirth() != null ? user.getUserBirth().toString() : "--";
+    String[] birthParts = birthStr.split("-");
+    String birthYY = birthParts.length > 0 ? birthParts[0] : "";
+    String birthMM = birthParts.length > 1 ? birthParts[1] : "";
+    String birthDD = birthParts.length > 2 ? birthParts[2] : "";
+
+    // 전화번호 분리
+    String phone = user.getUserPhone() != null ? user.getUserPhone() : "--";
+    String[] phoneParts = phone.split("-");
+    String phone1 = phoneParts.length > 0 ? phoneParts[0] : "010";
+    String phone2 = phoneParts.length > 1 ? phoneParts[1] : "";
+    String phone3 = phoneParts.length > 2 ? phoneParts[2] : "";
 %>
 
-<sql:setDataSource var="dataSource"
-                   driver="com.mysql.jdbc.Driver"
-                   url="jdbc:mysql://localhost:3306/AnyoneHereDB"
-                   user="root"
-                   password="1234" />
-
-<sql:query dataSource="${dataSource}" var="resultSet">
-    SELECT * FROM users WHERE user_id = ?
-    <sql:param value="<%=sessionId%>" />
-</sql:query>
-
 <div class="container py-4">
-    <jsp:include page="../common/menu.jsp" />
+    <jsp:include page="../common/menu.jsp"/>
 
     <div class="p-5 mb-4 bg-body-tertiary rounded-3">
         <div class="container-fluid py-5">
@@ -35,195 +54,140 @@ String sessionId = (String) session.getAttribute("userId");
         </div>
     </div>
 
-    <c:forEach var="row" items="${resultSet.rows}">
-        <c:set var="mail" value="${row.user_email}" />
-        <c:set var="mail1" value="${fn:split(mail, '@')[0]}" />
-        <c:set var="mail2" value="${fn:split(mail, '@')[1]}" />
+    <% if ("delete".equals(request.getParameter("error"))) { %>
+    <div class="alert alert-danger">탈퇴 처리 중 오류가 발생했습니다. 다시 시도해주세요.</div>
+    <% } %>
 
-        <c:set var="birth" value="${row.user_birth}" />
-        <c:set var="year" value="${fn:split(birth, '-')[0]}" />
-        <c:set var="monthRaw" value="${fn:split(birth, '-')[1]}" />
-        <c:set var="dayRaw" value="${fn:split(birth, '-')[2]}" />
-        <c:set var="month" value="${fn:length(monthRaw) == 1 ? '0' + monthRaw : monthRaw}" />
-        <c:set var="day" value="${fn:length(dayRaw) == 1 ? '0' + dayRaw : dayRaw}" />
+    <form name="newMember" action="<%= request.getContextPath() %>/processUpdateMember"
+          method="post" onsubmit="return checkForm()">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-        <c:set var="genderFull" value="${row.user_gender}" />
-        <c:set var="genderShort" value="${fn:substring(genderFull, 0, 1)}" />
-
-        <c:set var="phone" value="${row.user_phone}" />
-        <c:set var="phone1" value="${fn:split(phone, '-')[0]}" />
-        <c:set var="phone2" value="${fn:split(phone, '-')[1]}" />
-        <c:set var="phone3" value="${fn:split(phone, '-')[2]}" />
-
-        <form name="newMember" action="${pageContext.request.contextPath}/processUpdateMember" method="post" onsubmit="return checkForm()">
-            <div class="mb-3 row">
-                <label class="col-sm-2">아이디</label>
-                <div class="col-sm-3">
-                    <input name="id" type="text" class="form-control" value="${row.user_id}" readonly>
-                </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2">아이디</label>
+            <div class="col-sm-3">
+                <input name="id" type="text" class="form-control" value="<%= user.getUserId() %>" readonly>
             </div>
-            <div class="mb-3 row">
-                <label class="col-sm-2">비밀번호</label>
-                <div class="col-sm-3">
-                    <input name="password" type="password" class="form-control" value="${row.user_password}">
-                </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2">새 비밀번호</label>
+            <div class="col-sm-3">
+                <input name="password" type="password" class="form-control"
+                       placeholder="변경할 경우에만 입력 (미입력 시 유지)">
             </div>
-            <div class="mb-3 row">
-                <label class="col-sm-2">비밀번호 확인</label>
-                <div class="col-sm-3">
-                    <input name="password_confirm" type="text" class="form-control">
-                </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2">비밀번호 확인</label>
+            <div class="col-sm-3">
+                <input name="password_confirm" type="password" class="form-control">
             </div>
-            <div class="mb-3 row">
-                <label class="col-sm-2">성명</label>
-                <div class="col-sm-3">
-                    <input name="name" type="text" class="form-control" value="${row.user_name}">
-                </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2">성명</label>
+            <div class="col-sm-3">
+                <input name="name" type="text" class="form-control" value="<%= util.HtmlUtil.escape(user.getUserName() != null ? user.getUserName() : "") %>">
             </div>
-            <div class="mb-3 row">
-                <label class="col-sm-2">성별</label>
-                <div class="col-sm-3">
-                    <input name="gender" type="radio" value="남" <c:if test="${genderShort == '남'}">checked</c:if>> 남
-                    <input name="gender" type="radio" value="여" <c:if test="${genderShort == '여'}">checked</c:if>> 여
-                </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2">성별</label>
+            <div class="col-sm-3">
+                <input name="gender" type="radio" value="남" <%= "남".equals(user.getUserGender()) || (user.getUserGender() != null && user.getUserGender().startsWith("남")) ? "checked" : "" %>> 남
+                <input name="gender" type="radio" value="여" <%= "여".equals(user.getUserGender()) || (user.getUserGender() != null && user.getUserGender().startsWith("여")) ? "checked" : "" %>> 여
             </div>
-            <div class="mb-3 row">
-                <label class="col-sm-2">생일</label>
-                <div class="col-sm-10">
-                    <div class="row">
-                        <div class="col-sm-2">
-                            <input type="text" name="birthyy" maxlength="4" class="form-control" value="${year}">
-                        </div>
-                        <div class="col-sm-2">
-                            <select name="birthmm" id="birthmm" class="form-select">
-                                <option value="">월</option>
-                                <c:forEach var="i" begin="1" end="12">
-                                    <c:choose>
-                                        <c:when test="${i lt 10}"><c:set var="val" value="0${i}" /></c:when>
-                                        <c:otherwise><c:set var="val" value="${i}" /></c:otherwise>
-                                    </c:choose>
-                                    <option value="${val}">${i}</option>
-                                </c:forEach>
-                            </select>
-                        </div>
-                        <div class="col-sm-2">
-                            <input type="text" name="birthdd" maxlength="2" class="form-control" value="${day}">
-                        </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2">생일</label>
+            <div class="col-sm-10">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <input type="text" name="birthyy" maxlength="4" class="form-control" value="<%= birthYY %>">
+                    </div>
+                    <div class="col-sm-2">
+                        <select name="birthmm" id="birthmm" class="form-select">
+                            <option value="">월</option>
+                            <% for (int i = 1; i <= 12; i++) {
+                                String val = String.format("%02d", i);
+                                boolean selected = val.equals(birthMM);
+                            %>
+                            <option value="<%= val %>" <%= selected ? "selected" : "" %>><%= i %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                        <input type="text" name="birthdd" maxlength="2" class="form-control" value="<%= birthDD %>">
                     </div>
                 </div>
             </div>
-            <div class="mb-3 row">
-                <label class="col-sm-2">이메일</label>
-                <div class="col-sm-10">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <input type="text" name="mail1" value="${mail1}" class="form-control">
-                        </div> @
-                        <div class="col-sm-3">
-                            <select name="mail2" id="mail2" class="form-select">
-                                <option>naver.com</option>
-                                <option>daum.net</option>
-                                <option>gmail.com</option>
-                                <option>nate.com</option>
-                            </select>
-                        </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2">이메일</label>
+            <div class="col-sm-10">
+                <div class="row align-items-center">
+                    <div class="col-sm-4">
+                        <input type="text" name="mail1" value="<%= mail1 %>" class="form-control">
+                    </div>
+                    <div class="col-auto">@</div>
+                    <div class="col-sm-3">
+                        <select name="mail2" id="mail2" class="form-select">
+                            <% String[] domains = {"naver.com","daum.net","gmail.com","nate.com"};
+                               for (String d : domains) { %>
+                            <option value="<%= d %>" <%= d.equals(mail2) ? "selected" : "" %>><%= d %></option>
+                            <% } %>
+                        </select>
                     </div>
                 </div>
             </div>
-            <div class="mb-3 row">
-                <label class="col-sm-2">전화번호</label>
-                <div class="col-sm-10">
-                    <div class="row align-items-center">
-                        <div class="col-sm-2">
-                            <select name="phone1" id="phone1Select" class="form-select">
-                                <option value="010">010</option>
-                                <option value="011">011</option>
-                                <option value="012">012</option>
-                                <option value="013">013</option>
-                                <option value="014">014</option>
-                                <option value="015">015</option>
-                                <option value="016">016</option>
-                                <option value="017">017</option>
-                                <option value="018">018</option>
-                                <option value="019">019</option>
-                            </select>
-                        </div>
-                        <div class="col-auto">-</div>
-                        <div class="col-sm-2">
-                            <input type="text" name="phone2" maxlength="4" class="form-control" value="${phone2}">
-                        </div>
-                        <div class="col-auto">-</div>
-                        <div class="col-sm-2">
-                            <input type="text" name="phone3" maxlength="4" class="form-control" value="${phone3}">
-                        </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2">전화번호</label>
+            <div class="col-sm-10">
+                <div class="row align-items-center">
+                    <div class="col-sm-2">
+                        <select name="phone1" class="form-select">
+                            <% String[] phonePrefixes = {"010","011","012","013","014","015","016","017","018","019"};
+                               for (String p : phonePrefixes) { %>
+                            <option value="<%= p %>" <%= p.equals(phone1) ? "selected" : "" %>><%= p %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-auto">-</div>
+                    <div class="col-sm-2">
+                        <input type="text" name="phone2" maxlength="4" class="form-control" value="<%= phone2 %>">
+                    </div>
+                    <div class="col-auto">-</div>
+                    <div class="col-sm-2">
+                        <input type="text" name="phone3" maxlength="4" class="form-control" value="<%= phone3 %>">
                     </div>
                 </div>
             </div>
-            <div class="mb-3 row">
-                <label class="col-sm-2">주소</label>
-                <div class="col-sm-5">
-                    <input name="address" type="text" class="form-control" value="${row.user_address}">
-                </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2">주소</label>
+            <div class="col-sm-5">
+                <input name="address" type="text" class="form-control" value="<%= util.HtmlUtil.escape(user.getUserAddress() != null ? user.getUserAddress() : "") %>">
             </div>
-            <div class="mb-3 row">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <input type="submit" class="btn btn-primary" value="회원수정">
-                    <a href="deleteMember.jsp" class="btn btn-danger">회원탈퇴</a>
-                </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="submit" class="btn btn-primary" value="회원수정">
             </div>
-        </form>
-    </c:forEach>
+        </div>
+    </form>
 
-    <jsp:include page="../common/footer.jsp" />
+    <!-- 회원탈퇴: POST form -->
+    <hr class="my-4">
+    <form action="<%= request.getContextPath() %>/processDeleteMember" method="post"
+          onsubmit="return confirm('정말로 탈퇴하시겠습니까? 모든 데이터가 삭제되며 되돌릴 수 없습니다.')">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit" class="btn btn-outline-danger">회원 탈퇴</button>
+    </form>
+
+    <jsp:include page="../common/footer.jsp"/>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const mail2 = "${mail2}";
-    const month = "${month}";
-    const phone1 = "${phone1}";
-
-    const phone1Select = document.getElementById("phone1Select");
-    if (phone1Select) {
-        for (let i = 0; i < phone1Select.options.length; i++) {
-            if (phone1Select.options[i].value === phone1) {
-                phone1Select.options[i].selected = true;
-                break;
-            }
-        }
-    }
-
-    const mailSelect = document.getElementById("mail2");
-    if (mailSelect) {
-        for (let i = 0; i < mailSelect.options.length; i++) {
-            if (mailSelect.options[i].value === mail2) {
-                mailSelect.options[i].selected = true;
-                break;
-            }
-        }
-    }
-
-    const birthSelect = document.getElementById("birthmm");
-    if (birthSelect) {
-        for (let i = 0; i < birthSelect.options.length; i++) {
-            if (birthSelect.options[i].value === month) {
-                birthSelect.options[i].selected = true;
-                break;
-            }
-        }
-    }
-});
-
 function checkForm() {
     const form = document.newMember;
-    if (!form.id.value) {
-        alert("아이디를 입력하세요.");
-        return false;
-    }
-    if (!form.password.value) {
-        alert("비밀번호를 입력하세요.");
-        return false;
-    }
+    if (!form.password.value && !form.password_confirm.value) return true; // 비밀번호 미변경
     if (form.password.value !== form.password_confirm.value) {
         alert("비밀번호를 동일하게 입력하세요.");
         return false;

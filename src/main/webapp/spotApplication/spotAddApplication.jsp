@@ -6,12 +6,13 @@
 <head>
   <meta charset="UTF-8">
   <title>AnyoneHere-AddSpotApplication</title>
-  <link rel="stylesheet" href="../../../resources/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../resources/css/bootstrap.min.css" />
   <script src="../resources/js/validationApplicationSpot.js"></script>
 </head>
 <body>
 <%
   String userId = (String) session.getAttribute("userId");
+  String csrfToken = util.CsrfUtil.getOrCreateToken(session);
   if (userId == null) {
 %>
 <script>
@@ -94,6 +95,7 @@
           </div>
         </div>
 
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <div class="mb-3 row">
           <div class="col-sm-offset-2 col-sm-10">
             <input type="submit" class="btn btn-primary"

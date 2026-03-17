@@ -1,5 +1,6 @@
 package controller;
 
+import dao.WishlistRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -7,10 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import util.DBUtil;
 
 @WebServlet("/processAddWishlist")
 public class AddWishlistServlet extends HttpServlet {
@@ -28,18 +25,19 @@ public class AddWishlistServlet extends HttpServlet {
             return;
         }
 
-        int spotId = Integer.parseInt(request.getParameter("spotId"));
-
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(
-                     "INSERT INTO wishlist (user_id, spot_id) VALUES (?, ?)")) {
-            pstmt.setString(1, userId);
-            pstmt.setInt(2, spotId);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        int spotId;
+        try {
+            spotId = Integer.parseInt(request.getParameter("spotId"));
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/spot/spots.jsp");
+            return;
         }
 
-        response.sendRedirect(request.getContextPath() + "/wishlist/wishlist.jsp");
+        if (WishlistRepository.isWishlisted(userId, spotId)) {
+            response.sendRedirect(request.getContextPath() + "/wishlist/wishlist.jsp?error=duplicate");
+        } else {
+            WishlistRepository.addWishlist(userId, spotId);
+            response.sendRedirect(request.getContextPath() + "/wishlist/wishlist.jsp");
+        }
     }
 }

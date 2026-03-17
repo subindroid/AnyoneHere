@@ -3,9 +3,6 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <link rel="stylesheet" href="../resources/css/bootstrap.min.css" />
-<%
-	String sessionId = (String) session.getAttribute("sessionId");
-%>
 <header class="pb-3 mb-4 border-bottom">
 	<div class="container" style="position:relative;">
 		<div
@@ -23,25 +20,25 @@
 
 			<ul class="nav nav-pills">
 				<li class="nav-item"><a class="nav-link"
-										href="<c:url value="/spot/spots.jsp"/>">
+								href="<c:url value="/spot/spots.jsp"/>">
 					스팟 보기</a>
 				</li>
 				<li class="nav-item"><a class="nav-link"
-										href="${pageContext.request.contextPath}/community/board.jsp">
+								href="${pageContext.request.contextPath}/community/board.jsp">
 					커뮤니티</a>
 				</li>
 
 				<c:choose>
 					<c:when test="${empty sessionScope.userId}">
 						<li class="nav-item"><a class="nav-link"
-												href="<c:url value="/member/loginMember.jsp"/>">
+										href="<c:url value="/member/loginMember.jsp"/>">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
 								<path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z"/>
 								<path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
 							</svg> 로그인</a>
 						</li>
 						<li class="nav-item"><a class="nav-link"
-												href="<c:url value="/member/addMember.jsp"/>">
+										href="<c:url value="/member/addMember.jsp"/>">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 16">
 								<path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
 								<path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
@@ -49,20 +46,23 @@
 						</li>
 					</c:when>
 					<c:otherwise>
-						<li style="padding-top: 7px; color: white">[${sessionScope.userId}님]</li>
-						<li class="nav-item"><a class="nav-link"
-												href="<c:url value="/member/logoutMember.jsp"/>">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-								<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
-							</svg> 로그아웃</a>
+						<li style="padding-top: 7px; color: white">[<c:out value="${sessionScope.userId}"/>님]</li>
+						<li class="nav-item">
+							<form action="${pageContext.request.contextPath}/processLogoutMember" method="post" class="d-inline m-0 p-0">
+								<input type="hidden" name="_csrf" value="<%=util.CsrfUtil.getOrCreateToken(session)%>">
+								<button type="submit" class="btn nav-link px-2 py-1">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+										<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+									</svg> 로그아웃
+								</button>
+							</form>
 						</li>
 						<li class="nav-item"><a class="nav-link"
-												href="<c:url value="/member/updateMember.jsp"/>">
+										   href="<c:url value="/member/updateMember.jsp"/>">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
 								<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
 								<path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
 							</svg> 회원 수정</a>
-						</li>
 						</li>
 						<li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/wishlist/wishlist.jsp">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
@@ -70,16 +70,16 @@
 							</svg> 찜목록</a>
 						</li>
 						<li class="nav-item"><a class="nav-link"
-											   href="${pageContext.request.contextPath}/profile/myProfile.jsp">
+										   href="${pageContext.request.contextPath}/profile/myProfile.jsp">
 							내 프로필</a>
 						</li>
 						<li class="nav-item"><a class="nav-link"
-											   href="${pageContext.request.contextPath}/spotApplication/myApplications.jsp">
+										   href="${pageContext.request.contextPath}/spotApplication/myApplications.jsp">
 							나의 신청 내역</a>
 						</li>
 						<c:if test="${sessionScope.userRole == 'ADMIN'}">
 						<li class="nav-item"><a class="nav-link text-warning fw-bold"
-											   href="${pageContext.request.contextPath}/admin/spotApplicationAdmin.jsp">관리자</a></li>
+										   href="${pageContext.request.contextPath}/admin/spotApplicationAdmin.jsp">관리자</a></li>
 						</c:if>
 
 					</c:otherwise>

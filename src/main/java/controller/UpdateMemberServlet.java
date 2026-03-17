@@ -50,19 +50,34 @@ public class UpdateMemberServlet extends HttpServlet {
 
         String mail1 = request.getParameter("mail1");
         String mail2 = request.getParameter("mail2");
-        String email = mail1 + "@" + mail2;
+        if (mail1 == null || mail1.isBlank() || mail2 == null || mail2.isBlank()) {
+            response.sendRedirect(request.getContextPath() + "/member/updateMember.jsp?error=email");
+            return;
+        }
+        String email = mail1.trim() + "@" + mail2.trim();
 
-        String phone = request.getParameter("phone1") + "-"
-                     + request.getParameter("phone2") + "-"
-                     + request.getParameter("phone3");
+        String p1 = request.getParameter("phone1");
+        String p2 = request.getParameter("phone2");
+        String p3 = request.getParameter("phone3");
+        String phone = (p1 != null ? p1 : "") + "-"
+                     + (p2 != null ? p2 : "") + "-"
+                     + (p3 != null ? p3 : "");
         String address = request.getParameter("address");
 
-        // 비밀번호 처리: 빈 값이면 기존 해시 유지, 새 값이면 해싱
+        // 비밀번호 처리: 빈 값이면 기존 해시 유지, 새 값이면 최소 길이 확인 후 해싱
         String hashedPassword;
         if (password == null || password.isEmpty()) {
             User existing = UserRepository.getUserById(id);
-            hashedPassword = (existing != null) ? existing.getUserPassword() : "";
+            if (existing == null) {
+                response.sendRedirect(request.getContextPath() + "/member/loginMember.jsp");
+                return;
+            }
+            hashedPassword = existing.getUserPassword();
         } else {
+            if (password.length() < 8) {
+                response.sendRedirect(request.getContextPath() + "/member/updateMember.jsp?error=password");
+                return;
+            }
             hashedPassword = PasswordUtil.hash(password);
         }
 

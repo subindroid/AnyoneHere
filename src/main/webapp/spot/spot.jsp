@@ -30,13 +30,21 @@
             return;
         }
         String spotIdString = request.getParameter("spotId");
-        System.out.println(">>> spot.jsp spotIdString = " + spotIdString);
+        if (spotIdString == null || spotIdString.trim().isEmpty()) {
+            response.sendRedirect("../spot/spots.jsp");
+            return;
+        }
 
-        int spotId = Integer.parseInt(spotIdString);
-        System.out.println(">>> spot.jsp spotId(int) = " + spotId);
+        int spotId;
+        try {
+            spotId = Integer.parseInt(spotIdString);
+        } catch (NumberFormatException e) {
+            response.sendRedirect("../spot/spots.jsp");
+            return;
+        }
 
+        String csrfToken = util.CsrfUtil.getOrCreateToken(session);
         Spot spot = SpotRepository.getSpotBySpotId(spotId);
-        System.out.println(">>> spot.jsp spot = " + spot);
 
         if (spot == null) {
             response.sendRedirect("../exceptionPages/exceptionNoSpot.jsp?spotId=" + spotId);
@@ -45,14 +53,15 @@
     %>
     <div class="row align-items-md-stretch">
         <div class="col-md-8">
-            <img
-                    src="<%=request.getContextPath()%>/resources/images/<%=spot.getSpotImage()%>"
-                    style="width: 70%;"/>
+            <% if (spot.getSpotImage() != null && !spot.getSpotImage().isEmpty()) { %>
+        <img src="<%=request.getContextPath()%>/resources/images/<%=util.HtmlUtil.escape(spot.getSpotImage())%>"
+             style="width: 70%;" alt="스팟 이미지"/>
+        <% } %>
             <h3>
-                <b><%=spot.getSpotName()%>
+                <b><%=util.HtmlUtil.escape(spot.getSpotName())%>
                 </b>
             </h3>
-            <p><%=spot.getSpotDescription()%>
+            <p><%=util.HtmlUtil.escape(spot.getSpotDescription())%>
             </p>
             <p><a href="../review/reviews.jsp?spotId=<%=spot.getSpotId()%>">
                 <button type="submit" class="btn btn-primary" role="button">
@@ -71,6 +80,7 @@
                       style="display: inline;">
                     <input type="hidden" name="spotId"
                            value="<%=spot.getSpotId()%>">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <button type="submit" class="btn btn-warning" role="button">찜하기
                         &raquo;
                     </button>

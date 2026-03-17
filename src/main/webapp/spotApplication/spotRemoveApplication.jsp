@@ -12,6 +12,7 @@
 <body>
 <%
     String userId = (String) session.getAttribute("userId");
+    String csrfToken = util.CsrfUtil.getOrCreateToken(session);
     if (userId == null) {
 %>
 <script>
@@ -28,7 +29,13 @@
         return;
     }
 
-    int spotId = Integer.parseInt(spotIdStr);
+    int spotId;
+    try {
+        spotId = Integer.parseInt(spotIdStr);
+    } catch (NumberFormatException e) {
+        response.sendRedirect(request.getContextPath() + "/spot/spots.jsp");
+        return;
+    }
     Spot spot = SpotRepository.getSpotBySpotId(spotId);
     if (spot == null) {
         response.sendRedirect(request.getContextPath() + "/exceptionPages/exceptionNoSpot.jsp");
@@ -73,6 +80,7 @@
 
                 <div class="mb-3 row">
                     <div class="col-sm-offset-2 col-sm-10">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <button type="submit" class="btn btn-danger"
                                 onclick="return confirm('정말로 이 장소 삭제를 신청하시겠습니까?')">
                             삭제 신청

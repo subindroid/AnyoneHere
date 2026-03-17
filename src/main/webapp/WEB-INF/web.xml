@@ -3,6 +3,34 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+    <!-- 관리자 경로 보호 필터 -->
+    <filter>
+        <filter-name>AdminFilter</filter-name>
+        <filter-class>controller.AdminFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AdminFilter</filter-name>
+        <url-pattern>/admin/*</url-pattern>
+    </filter-mapping>
+
+    <!-- CSRF 토큰 검증 필터 -->
+    <filter>
+        <filter-name>CsrfFilter</filter-name>
+        <filter-class>controller.CsrfFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CsrfFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+        </cookie-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
     <error-page>
         <error-code>404</error-code>
         <location>/exceptionPages/exceptionNoPage.jsp</location>
@@ -15,10 +43,4 @@
         <exception-type>java.lang.Throwable</exception-type>
         <location>/exceptionPages/exceptionInternalError.jsp</location>
     </error-page>
-    <dependency>
-        <groupId>jakarta.servlet</groupId>
-        <artifactId>jakarta.servlet-api</artifactId>
-        <version>6.0.0</version>
-        <scope>provided</scope>
-    </dependency>
 </web-app>

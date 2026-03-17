@@ -37,14 +37,34 @@ public class AddSpotServlet extends HttpServlet {
         String category        = request.getParameter("category");
         String spotAddress     = request.getParameter("spot_address");
 
+        if (spotName == null || spotName.isBlank()) {
+            response.sendRedirect(request.getContextPath() + "/spotApplication/spotAddApplication.jsp?error=empty");
+            return;
+        }
+        if (spotName.length() > 100) {
+            response.sendRedirect(request.getContextPath() + "/spotApplication/spotAddApplication.jsp?error=toolong");
+            return;
+        }
+        if (spotDescription != null && spotDescription.length() > 1000) {
+            response.sendRedirect(request.getContextPath() + "/spotApplication/spotAddApplication.jsp?error=toolong");
+            return;
+        }
+
         double latitude = 0.0, longitude = 0.0;
         if (spotLocation != null && spotLocation.contains(",")) {
             try {
                 String[] parts = spotLocation.split(",");
+                if (parts.length < 2) {
+                    response.sendRedirect(request.getContextPath()
+                            + "/spotApplication/spotAddApplication.jsp?error=location");
+                    return;
+                }
                 latitude  = Double.parseDouble(parts[0].trim());
                 longitude = Double.parseDouble(parts[1].trim());
             } catch (NumberFormatException e) {
-                // 좌표 파싱 실패 시 0.0 유지
+                response.sendRedirect(request.getContextPath()
+                        + "/spotApplication/spotAddApplication.jsp?error=location");
+                return;
             }
         }
 
