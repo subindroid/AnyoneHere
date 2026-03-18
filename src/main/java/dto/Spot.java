@@ -12,6 +12,7 @@ public class Spot implements Serializable {
     private String spotDescription;  // spot_description
     private String spotImage;
     private String spotCategory;
+    private int activeUserCount;
 
 
     public Spot() {
@@ -80,6 +81,14 @@ public class Spot implements Serializable {
 
     public void setSpotCategory(String spotCategory) {
         this.spotCategory = spotCategory;
+    }
+
+    public int getActiveUserCount() {
+        return activeUserCount;
+    }
+
+    public void setActiveUserCount(int activeUserCount) {
+        this.activeUserCount = activeUserCount;
     }
 
     public Spot(int spotId, String spotName) {

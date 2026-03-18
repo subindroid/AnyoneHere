@@ -58,8 +58,12 @@
              style="width: 70%;" alt="스팟 이미지"/>
         <% } %>
             <h3>
-                <b><%=util.HtmlUtil.escape(spot.getSpotName())%>
-                </b>
+                <b><%=util.HtmlUtil.escape(spot.getSpotName())%></b>
+                <% if (spot.getActiveUserCount() > 0) { %>
+                <span class="badge bg-success ms-2"><%=spot.getActiveUserCount()%>명 방문 중</span>
+                <% } else { %>
+                <span class="badge bg-secondary ms-2">방문자 없음</span>
+                <% } %>
             </h3>
             <p><%=util.HtmlUtil.escape(spot.getSpotDescription())%>
             </p>

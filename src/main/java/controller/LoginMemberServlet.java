@@ -9,6 +9,11 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import dao.UserRepository;
 import dto.User;
+import util.DBUtil;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 @WebServlet("/processLoginMember")
 public class LoginMemberServlet extends HttpServlet {
@@ -39,10 +44,25 @@ public class LoginMemberServlet extends HttpServlet {
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("userRole",
                     user.getUserRole() != null ? user.getUserRole() : "USER");
+            session.setAttribute("locationOn", loadLocationSetting(user.getUserId()));
 
             response.sendRedirect(request.getContextPath() + "/member/resultMember.jsp?msg=2");
         } else {
             response.sendRedirect(request.getContextPath() + "/member/loginMember.jsp?error=true");
         }
+    }
+
+    private boolean loadLocationSetting(String userId) {
+        String sql = "SELECT show_location_onOff FROM user_privacy_setting WHERE user_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getBoolean("show_location_onOff");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

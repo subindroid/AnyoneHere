@@ -9,7 +9,9 @@ import util.DBUtil;
 public class SpotRepository {
 
     public static Spot getSpotBySpotId(int spotId) {
-        String sql = "SELECT * FROM spots WHERE spot_id = ?";
+        String sql = "SELECT s.*, COALESCE(sp.active_user_count, 0) AS active_user_count " +
+                     "FROM spots s LEFT JOIN spot_presence sp ON s.spot_id = sp.spot_id " +
+                     "WHERE s.spot_id = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, spotId);
@@ -24,6 +26,7 @@ public class SpotRepository {
                     spot.setRadiusM(rs.getDouble("radius_m"));
                     spot.setSpotCategory(rs.getString("spot_category"));
                     spot.setSpotImage(rs.getString("spot_image"));
+                    spot.setActiveUserCount(rs.getInt("active_user_count"));
                     return spot;
                 }
             }
@@ -44,10 +47,12 @@ public class SpotRepository {
         boolean hasCategory = (category != null && !category.isEmpty());
         boolean hasKeyword  = (keyword  != null && !keyword.trim().isEmpty());
 
-        StringBuilder sql = new StringBuilder("SELECT * FROM spots WHERE 1=1");
-        if (hasCategory) sql.append(" AND spot_category = ?");
-        if (hasKeyword)  sql.append(" AND (spot_name LIKE ? OR spot_description LIKE ?)");
-        sql.append(" ORDER BY spot_id DESC LIMIT ? OFFSET ?");
+        StringBuilder sql = new StringBuilder(
+                "SELECT s.*, COALESCE(sp.active_user_count, 0) AS active_user_count " +
+                "FROM spots s LEFT JOIN spot_presence sp ON s.spot_id = sp.spot_id WHERE 1=1");
+        if (hasCategory) sql.append(" AND s.spot_category = ?");
+        if (hasKeyword)  sql.append(" AND (s.spot_name LIKE ? OR s.spot_description LIKE ?)");
+        sql.append(" ORDER BY s.spot_id DESC LIMIT ? OFFSET ?");
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -72,6 +77,7 @@ public class SpotRepository {
                     spot.setSpotLongitude(rs.getDouble("longitude"));
                     spot.setSpotCategory(rs.getString("spot_category"));
                     spot.setSpotImage(rs.getString("spot_image"));
+                    spot.setActiveUserCount(rs.getInt("active_user_count"));
                     spots.add(spot);
                 }
             }
@@ -115,10 +121,12 @@ public class SpotRepository {
         boolean hasCategory = (category != null && !category.isEmpty() && !"ALL".equals(category));
         boolean hasKeyword  = (keyword  != null && !keyword.trim().isEmpty());
 
-        StringBuilder sql = new StringBuilder("SELECT * FROM spots WHERE 1=1");
-        if (hasCategory) sql.append(" AND spot_category = ?");
-        if (hasKeyword)  sql.append(" AND (spot_name LIKE ? OR spot_description LIKE ?)");
-        sql.append(" ORDER BY spot_id DESC");
+        StringBuilder sql = new StringBuilder(
+                "SELECT s.*, COALESCE(sp.active_user_count, 0) AS active_user_count " +
+                "FROM spots s LEFT JOIN spot_presence sp ON s.spot_id = sp.spot_id WHERE 1=1");
+        if (hasCategory) sql.append(" AND s.spot_category = ?");
+        if (hasKeyword)  sql.append(" AND (s.spot_name LIKE ? OR s.spot_description LIKE ?)");
+        sql.append(" ORDER BY s.spot_id DESC");
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
@@ -141,6 +149,7 @@ public class SpotRepository {
                     spot.setSpotLongitude(rs.getDouble("longitude"));
                     spot.setSpotCategory(rs.getString("spot_category"));
                     spot.setSpotImage(rs.getString("spot_image"));
+                    spot.setActiveUserCount(rs.getInt("active_user_count"));
                     spots.add(spot);
                 }
             }
@@ -152,7 +161,8 @@ public class SpotRepository {
 
     public static ArrayList<Spot> getAllSpots() {
         ArrayList<Spot> spots = new ArrayList<>();
-        String sql = "SELECT * FROM spots";
+        String sql = "SELECT s.*, COALESCE(sp.active_user_count, 0) AS active_user_count " +
+                     "FROM spots s LEFT JOIN spot_presence sp ON s.spot_id = sp.spot_id";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -167,6 +177,7 @@ public class SpotRepository {
                 spot.setSpotLongitude(rs.getDouble("longitude"));
                 spot.setSpotCategory(rs.getString("spot_category"));
                 spot.setSpotImage(rs.getString("spot_image"));
+                spot.setActiveUserCount(rs.getInt("active_user_count"));
                 spots.add(spot);
             }
         } catch (Exception e) {

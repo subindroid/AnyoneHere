@@ -86,6 +86,20 @@
 
                 <a href="${pageContext.request.contextPath}/profile/editProfile.jsp"
                    class="btn btn-outline-secondary btn-sm mt-2">프로필 수정</a>
+
+                <!-- 위치 공유 설정 -->
+                <div class="mt-3 pt-3 border-top text-start">
+                    <p class="fw-bold small mb-2">위치 공유 설정</p>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="locationToggle"
+                               <%= Boolean.TRUE.equals(session.getAttribute("locationOn")) ? "checked" : "" %>>
+                        <label class="form-check-label small" for="locationToggle" id="locationLabel">
+                            <%= Boolean.TRUE.equals(session.getAttribute("locationOn")) ? "공유 중" : "공유 안 함" %>
+                        </label>
+                    </div>
+                    <p class="text-muted" style="font-size:0.75rem;">켜면 스팟 방문자 수에 반영됩니다.<br>30분마다 계속할지 확인합니다.</p>
+                </div>
             </div>
         </div>
 
@@ -179,6 +193,18 @@
 
 <!-- Bootstrap JS (collapse 동작용) -->
 <script>
+    // 위치 공유 토글
+    document.getElementById('locationToggle').addEventListener('change', function() {
+        var body = new URLSearchParams();
+        body.append('_csrf', '<%= csrfToken %>');
+        fetch('<%= request.getContextPath() %>/toggleLocation', { method: 'POST', body: body })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('locationLabel').textContent =
+                    data.locationOn ? '공유 중' : '공유 안 함';
+            });
+    });
+
     // Bootstrap collapse 직접 구현 (CDN 없이)
     document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(btn => {
         btn.addEventListener('click', () => {

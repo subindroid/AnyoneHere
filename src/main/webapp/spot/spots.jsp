@@ -86,7 +86,11 @@
                      class="card-img-top" style="height:200px; object-fit:cover;" alt="스팟 이미지">
                 <% } %>
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title fw-bold"><%= util.HtmlUtil.escape(spot.getSpotName()) %></h5>
+                    <h5 class="card-title fw-bold"><%= util.HtmlUtil.escape(spot.getSpotName()) %>
+                        <% if (spot.getActiveUserCount() > 0) { %>
+                        <span class="badge bg-success ms-1"><%= spot.getActiveUserCount() %>명 방문 중</span>
+                        <% } %>
+                    </h5>
                     <p class="card-text text-muted small flex-grow-1"><%= util.HtmlUtil.escape(shortDesc) %></p>
                     <div class="d-flex gap-2 mt-2">
                         <a href="spot.jsp?spotId=<%= spot.getSpotId() %>" class="btn btn-secondary btn-sm">상세 보기</a>

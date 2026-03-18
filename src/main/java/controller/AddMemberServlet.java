@@ -10,10 +10,25 @@ import dao.ProfileRepository;
 import dao.UserRepository;
 import dto.Profile;
 import dto.User;
+import util.DBUtil;
 import util.PasswordUtil;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 @WebServlet("/processAddMember")
 public class AddMemberServlet extends HttpServlet {
+
+    private void initPrivacySetting(String userId) {
+        String sql = "INSERT IGNORE INTO user_privacy_setting (user_id, show_location_onOff) VALUES (?, FALSE)";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -86,6 +101,9 @@ public class AddMemberServlet extends HttpServlet {
         Profile profile = new Profile();
         profile.setUserId(id);
         ProfileRepository.upsertProfile(profile);
+
+        // 위치 공유 설정 기본값 생성 (기본: 비공개)
+        initPrivacySetting(id);
 
         response.sendRedirect(request.getContextPath() + "/member/resultMember.jsp?msg=1");
     }

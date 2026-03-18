@@ -5,7 +5,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS wishlist, reviews, spot_presence, location_logs,
     profile, user_cars, user_privacy_setting, spots, users, add_spot_applications,
     user_current_location, spot_category, remove_spot_applications,
-    posts, post_reports, post_likes, post_reports, post_comments;
+    post_images, post_reports, post_likes, post_comments, posts;
 
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -82,7 +82,8 @@ INSERT INTO spot_category (category_id, category_name) VALUES
 (1, 'cafe'),
 (2, 'park'),
 (3, 'dining'),
-(4, 'hobby');
+(4, 'hobby'),
+(5, '문화/공연');
 
 
 -- 드라이브 스팟 정보
@@ -173,6 +174,7 @@ CREATE TABLE add_spot_applications
     spot_category       VARCHAR(20) DEFAULT 'cafe',            -- 장소 카테고리
     spot_image          VARCHAR(100),                          -- 장소 사진
     added_spot_address  VARCHAR(100),                          -- 장소 주소
+    reject_reason       VARCHAR(300),                          -- 거절 사유
 
     PRIMARY KEY (add_application_id),
     FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
@@ -189,11 +191,12 @@ CREATE TABLE remove_spot_applications
     remove_reason          VARCHAR(300) NOT NULL,
     remove_status          VARCHAR(20) DEFAULT 'PENDING',
     remove_spot_created_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    reject_reason          VARCHAR(300),                          -- 거절 사유
 
     FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
     FOREIGN KEY (spot_id) REFERENCES spots (spot_id) ON DELETE CASCADE,
     CHECK (remove_status IN ('PENDING', 'APPROVED', 'REJECTED'))
-);
+) DEFAULT CHARSET = utf8mb4;
 -- 2/10 추가!!!!!!!!!!!!!!!!!!!!!!!!
 CREATE TABLE user_current_location
 (
