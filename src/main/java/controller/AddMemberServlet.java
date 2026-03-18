@@ -38,9 +38,18 @@ public class AddMemberServlet extends HttpServlet {
 
         String id = request.getParameter("id");
         String password = request.getParameter("password");
+        String passwordConfirm = request.getParameter("password_confirm");
 
+        if (id == null || id.isBlank()) {
+            response.sendRedirect(request.getContextPath() + "/member/addMember.jsp?error=id");
+            return;
+        }
         if (password == null || password.length() < 8) {
             response.sendRedirect(request.getContextPath() + "/member/addMember.jsp?error=password");
+            return;
+        }
+        if (!password.equals(passwordConfirm)) {
+            response.sendRedirect(request.getContextPath() + "/member/addMember.jsp?error=passwordMismatch");
             return;
         }
         String name = request.getParameter("name");

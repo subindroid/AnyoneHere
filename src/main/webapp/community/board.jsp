@@ -117,7 +117,7 @@
         <ul class="pagination justify-content-center">
             <% for (int i = 1; i <= totalPages; i++) { %>
             <li class="page-item <%= i == currentPage ? "active" : "" %>">
-                <a class="page-link" href="board.jsp?category=<%= category %>&keyword=<%= keyword %>&page=<%= i %>"><%= i %></a>
+                <a class="page-link" href="board.jsp?category=<%= category %>&keyword=<%= util.HtmlUtil.escape(keyword) %>&page=<%= i %>"><%= i %></a>
             </li>
             <% } %>
         </ul>

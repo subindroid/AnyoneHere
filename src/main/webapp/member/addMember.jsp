@@ -6,7 +6,7 @@
 <head>
     <link rel="stylesheet" href="../resources/css/bootstrap.min.css" />
     <title>회원 가입</title>
-	<script src="../resources/js/validation.js"></script>
+	<script src="../resources/js/validationSignIn.js"></script>
 </head>
 <body>
 
@@ -19,6 +19,19 @@
             <p class="col-md-8 fs-4">Membership Joining</p>
         </div>
     </div>
+
+    <!-- 에러 메시지 -->
+    <% String error = request.getParameter("error"); if (error != null) { %>
+    <div class="alert alert-danger">
+        <% if ("id".equals(error)) { %>아이디를 입력해주세요.
+        <% } else if ("password".equals(error)) { %>비밀번호는 8자 이상이어야 합니다.
+        <% } else if ("passwordMismatch".equals(error)) { %>비밀번호가 일치하지 않습니다.
+        <% } else if ("birth".equals(error)) { %>생년월일을 올바르게 입력해주세요.
+        <% } else if ("email".equals(error)) { %>이메일을 올바르게 입력해주세요.
+        <% } else if ("dup".equals(error)) { %>이미 사용 중인 아이디 또는 이메일입니다.
+        <% } %>
+    </div>
+    <% } %>
 
     <!-- 회원가입 폼 -->
     <%  String csrfToken = util.CsrfUtil.getOrCreateToken(session); %>

@@ -49,12 +49,13 @@
 
     <!-- 카테고리 탭 -->
     <ul class="nav nav-tabs mb-3">
-        <li class="nav-item"><a class="nav-link <%= "ALL".equals(category) ? "active" : "" %>" href="spots.jsp?category=ALL&keyword=<%= keyword %>">전체</a></li>
-        <li class="nav-item"><a class="nav-link <%= "1".equals(category) ? "active" : "" %>" href="spots.jsp?category=1&keyword=<%= keyword %>">카페/음식점</a></li>
-        <li class="nav-item"><a class="nav-link <%= "2".equals(category) ? "active" : "" %>" href="spots.jsp?category=2&keyword=<%= keyword %>">공원/자연</a></li>
-        <li class="nav-item"><a class="nav-link <%= "3".equals(category) ? "active" : "" %>" href="spots.jsp?category=3&keyword=<%= keyword %>">쇼핑</a></li>
-        <li class="nav-item"><a class="nav-link <%= "4".equals(category) ? "active" : "" %>" href="spots.jsp?category=4&keyword=<%= keyword %>">관광/랜드마크</a></li>
-        <li class="nav-item"><a class="nav-link <%= "5".equals(category) ? "active" : "" %>" href="spots.jsp?category=5&keyword=<%= keyword %>">문화/공연</a></li>
+        <% String ek = util.HtmlUtil.escape(keyword); %>
+        <li class="nav-item"><a class="nav-link <%= "ALL".equals(category) ? "active" : "" %>" href="spots.jsp?category=ALL&keyword=<%= ek %>">전체</a></li>
+        <li class="nav-item"><a class="nav-link <%= "1".equals(category) ? "active" : "" %>" href="spots.jsp?category=1&keyword=<%= ek %>">카페/음식점</a></li>
+        <li class="nav-item"><a class="nav-link <%= "2".equals(category) ? "active" : "" %>" href="spots.jsp?category=2&keyword=<%= ek %>">공원/자연</a></li>
+        <li class="nav-item"><a class="nav-link <%= "3".equals(category) ? "active" : "" %>" href="spots.jsp?category=3&keyword=<%= ek %>">쇼핑</a></li>
+        <li class="nav-item"><a class="nav-link <%= "4".equals(category) ? "active" : "" %>" href="spots.jsp?category=4&keyword=<%= ek %>">관광/랜드마크</a></li>
+        <li class="nav-item"><a class="nav-link <%= "5".equals(category) ? "active" : "" %>" href="spots.jsp?category=5&keyword=<%= ek %>">문화/공연</a></li>
     </ul>
 
     <!-- 검색 폼 -->
@@ -114,17 +115,17 @@
         <ul class="pagination justify-content-center">
             <% if (currentPage > 1) { %>
             <li class="page-item">
-                <a class="page-link" href="spots.jsp?category=<%= category %>&keyword=<%= keyword %>&page=<%= currentPage - 1 %>">이전</a>
+                <a class="page-link" href="spots.jsp?category=<%= category %>&keyword=<%= ek %>&page=<%= currentPage - 1 %>">이전</a>
             </li>
             <% } %>
             <% for (int i = 1; i <= totalPages; i++) { %>
             <li class="page-item <%= i == currentPage ? "active" : "" %>">
-                <a class="page-link" href="spots.jsp?category=<%= category %>&keyword=<%= keyword %>&page=<%= i %>"><%= i %></a>
+                <a class="page-link" href="spots.jsp?category=<%= category %>&keyword=<%= ek %>&page=<%= i %>"><%= i %></a>
             </li>
             <% } %>
             <% if (currentPage < totalPages) { %>
             <li class="page-item">
-                <a class="page-link" href="spots.jsp?category=<%= category %>&keyword=<%= keyword %>&page=<%= currentPage + 1 %>">다음</a>
+                <a class="page-link" href="spots.jsp?category=<%= category %>&keyword=<%= ek %>&page=<%= currentPage + 1 %>">다음</a>
             </li>
             <% } %>
         </ul>

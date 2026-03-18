@@ -49,7 +49,7 @@
         <div class="h-100 p-2">
             <img src="<%= request.getContextPath() %>/resources/images/<%= util.HtmlUtil.escape(spot.getSpotImage()) %>" width="100">
             <p><%= util.HtmlUtil.escape(spot.getSpotName()) %></p>
-            <form action="removeWishlist.jsp" method="post">
+            <form action="<%= request.getContextPath() %>/processRemoveWishlist" method="post">
                 <input type="hidden" name="spotId" value="<%= spot.getSpotId() %>">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <button type="submit" class="btn btn-danger">찜 삭제</button>

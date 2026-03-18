@@ -174,7 +174,7 @@
     <jsp:include page="../common/footer.jsp"/>
 </div>
 
-<script src="../resources/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function toggleLike(postId) {
     fetch('<%= request.getContextPath() %>/processToggleLike', {
