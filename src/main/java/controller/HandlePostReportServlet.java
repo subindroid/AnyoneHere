@@ -29,7 +29,7 @@ public class HandlePostReportServlet extends HttpServlet {
         String action      = request.getParameter("action"); // reviewed / dismissed
 
         if (reportIdStr == null || action == null) {
-            response.sendRedirect(request.getContextPath() + "/admin/spotApplicationAdmin.jsp");
+            response.sendRedirect(request.getContextPath() + "/admin/spotApplicationAdmin.jsp?tab=report");
             return;
         }
 

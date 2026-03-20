@@ -23,12 +23,7 @@
     </div>
 
     <%
-        // 세션에서 사용자 ID 확인
         String userId = (String) session.getAttribute("userId");
-        if (userId == null) {
-            response.sendRedirect("../member/loginMember.jsp"); // 로그인 안된 경우
-            return;
-        }
         String spotIdString = request.getParameter("spotId");
         if (spotIdString == null || spotIdString.trim().isEmpty()) {
             response.sendRedirect("../spot/spots.jsp");

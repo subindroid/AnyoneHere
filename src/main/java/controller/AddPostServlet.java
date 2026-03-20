@@ -79,7 +79,8 @@ public class AddPostServlet extends HttpServlet {
                 } catch (IllegalArgumentException e) {
                     // 허용되지 않는 확장자는 건너뜀
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    // 이미지 저장 실패 시 해당 이미지만 건너뜀 (게시글 자체는 유지)
+                    e.printStackTrace();
                 }
             }
         }

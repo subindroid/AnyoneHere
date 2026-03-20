@@ -41,13 +41,20 @@ public class PostImageRepository {
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            for (int i = 0; i < imagePaths.size(); i++) {
-                ps.setInt(1, postId);
-                ps.setString(2, imagePaths.get(i));
-                ps.setInt(3, i);
-                ps.addBatch();
+            conn.setAutoCommit(false);
+            try {
+                for (int i = 0; i < imagePaths.size(); i++) {
+                    ps.setInt(1, postId);
+                    ps.setString(2, imagePaths.get(i));
+                    ps.setInt(3, i);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+                conn.commit();
+            } catch (Exception e) {
+                conn.rollback();
+                throw e;
             }
-            ps.executeBatch();
         } catch (Exception e) {
             e.printStackTrace();
         }

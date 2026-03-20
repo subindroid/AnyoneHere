@@ -46,7 +46,9 @@ public class RemovePostServlet extends HttpServlet {
                 if (img.getImagePath() != null && !img.getImagePath().isEmpty()) {
                     try {
                         Files.deleteIfExists(Paths.get(uploadDir, img.getImagePath()));
-                    } catch (Exception ignored) {}
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

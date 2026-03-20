@@ -7,15 +7,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
-@WebServlet("/processAddWishlist")
-public class AddWishlistServlet extends HttpServlet {
+@WebServlet("/processRemoveWishlist")
+public class RemoveWishlistServlet extends HttpServlet {
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        request.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession(false);
         String userId = (session != null) ? (String) session.getAttribute("userId") : null;
@@ -28,22 +28,12 @@ public class AddWishlistServlet extends HttpServlet {
         int spotId;
         try {
             spotId = Integer.parseInt(request.getParameter("spotId"));
-        } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/spot/spots.jsp");
+        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/wishlist/wishlist.jsp");
             return;
         }
 
-        if (WishlistRepository.isWishlisted(userId, spotId)) {
-            response.sendRedirect(request.getContextPath() + "/wishlist/wishlist.jsp?error=duplicate");
-        } else {
-            try {
-                WishlistRepository.addWishlist(userId, spotId);
-                response.sendRedirect(request.getContextPath() + "/wishlist/wishlist.jsp");
-            } catch (Exception e) {
-                // 동시 요청으로 인한 중복 키 예외 처리
-                e.printStackTrace();
-                response.sendRedirect(request.getContextPath() + "/wishlist/wishlist.jsp?error=duplicate");
-            }
-        }
+        WishlistRepository.removeWishlist(userId, spotId);
+        response.sendRedirect(request.getContextPath() + "/wishlist/wishlist.jsp");
     }
 }

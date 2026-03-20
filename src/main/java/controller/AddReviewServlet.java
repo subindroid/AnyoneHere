@@ -60,8 +60,14 @@ public class AddReviewServlet extends HttpServlet {
             return;
         }
 
-        ReviewRepository.addReview(userId, spotId, content.trim(), rating);
-
-        response.sendRedirect(request.getContextPath() + "/review/reviews.jsp?spotId=" + spotId);
+        try {
+            ReviewRepository.addReview(userId, spotId, content.trim(), rating);
+            response.sendRedirect(request.getContextPath() + "/review/reviews.jsp?spotId=" + spotId);
+        } catch (Exception e) {
+            // 동시 요청으로 인한 중복 키 예외 처리
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath()
+                    + "/review/reviews.jsp?spotId=" + spotId + "&error=duplicate");
+        }
     }
 }

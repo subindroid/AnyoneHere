@@ -66,7 +66,15 @@ public class RemoveSpotApplicationRepository {
     }
 
     public static void updateStatus(int applicationId, String status) {
-        updateStatus(applicationId, status, (String) null);
+        String sql = "UPDATE remove_spot_applications SET remove_status = ? WHERE remove_application_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            pstmt.setInt(2, applicationId);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /** 거절 사유 포함 상태 변경 */

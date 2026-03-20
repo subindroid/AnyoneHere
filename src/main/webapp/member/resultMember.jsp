@@ -13,7 +13,7 @@
       <div class="container-fluid py-5">
       <%
 			String msg = request.getParameter("msg");
-      		if (msg.equals("0")||msg.equals("2")||msg.equals("3")){
+      		if ("0".equals(msg)||"2".equals(msg)||"3".equals(msg)){
       %>
         <h1 class="display-5 fw-bold">회원 정보</h1>
         <p class="col-md-8 fs-4">Membership Info</p>    
@@ -22,6 +22,8 @@
         %>  
          <h1 class="display-5 fw-bold">회원 가입</h1>
         <p class="col-md-8 fs-4">Membership Joining</p>    
+         <% } else if (msg == null) { %>
+         <h1 class="display-5 fw-bold">알림</h1>
          <% }%>
       </div>
     </div>

@@ -86,7 +86,9 @@ public class UpdatePostServlet extends HttpServlet {
                         java.nio.file.Files.deleteIfExists(
                                 java.nio.file.Paths.get(uploadDir, path));
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -102,8 +104,11 @@ public class UpdatePostServlet extends HttpServlet {
             if ("postImages".equals(part.getName()) && part.getSize() > 0) {
                 try {
                     newImages.add(FileUtil.saveImage(part, uploadDir));
-                } catch (IllegalArgumentException ignored) {} catch (Exception e) {
-                    throw new RuntimeException(e);
+                } catch (IllegalArgumentException e) {
+                    // 허용되지 않는 확장자는 건너뜀
+                } catch (Exception e) {
+                    // 이미지 저장 실패 시 해당 이미지만 건너뜀 (게시글 수정 자체는 유지)
+                    e.printStackTrace();
                 }
             }
         }

@@ -107,7 +107,15 @@ public class AddSpotApplicationRepository {
     }
 
     public static void updateStatus(int applicationId, String status) {
-        updateStatus(applicationId, status, (String) null);
+        String sql = "UPDATE add_spot_applications SET add_status = ? WHERE add_application_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            pstmt.setInt(2, applicationId);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /** 거절 사유 포함 상태 변경 */
