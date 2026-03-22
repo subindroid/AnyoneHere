@@ -238,7 +238,7 @@
         iconSize: [26, 26], iconAnchor: [13, 26]
     });
 
-    fetch('/api/spots')
+    fetch('<%=request.getContextPath()%>/api/spots')
         .then(function(r) { return r.json(); })
         .then(function(spots) {
             spots.forEach(function(spot) {
