@@ -232,6 +232,22 @@
                 });
             });
         });
+	// ── 위치 전송 (30초마다) ──
+	function sendLocation() {
+		if (!navigator.geolocation) return;
+		navigator.geolocation.getCurrentPosition(function(pos) {
+			var formData = new FormData();
+			formData.append('latitude', pos.coords.latitude);
+			formData.append('longitude', pos.coords.longitude);
+			fetch('<%=request.getContextPath()%>/updateLocation', {
+				method: 'POST',
+				body: formData
+			});
+		});
+	}
+
+	sendLocation();
+	setInterval(sendLocation, 30000);
 </script>
 </body>
 </html>
