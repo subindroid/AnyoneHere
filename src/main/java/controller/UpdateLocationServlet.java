@@ -48,7 +48,49 @@ public class UpdateLocationServlet extends HttpServlet {
         }
 
         insertLocationLog(userId, latitude, longitude);
+        upsertCurrentLocation(userId, latitude, longitude);
+        recalculateSpotPresence();
         response.getWriter().write("{\"status\":\"ok\"}");
+    }
+
+    private void upsertCurrentLocation(String userId, double latitude, double longitude) {
+        String sql = "INSERT INTO user_current_location (user_id, current_latitude, current_longitude) " +
+                     "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE " +
+                     "current_latitude = VALUES(current_latitude), " +
+                     "current_longitude = VALUES(current_longitude), " +
+                     "updated_at = NOW()";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ps.setDouble(2, latitude);
+            ps.setDouble(3, longitude);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void recalculateSpotPresence() {
+        String sql =
+            "INSERT INTO spot_presence (spot_id, active_user_count, calculated_at) " +
+            "SELECT s.spot_id, COUNT(ucl.user_id), NOW() " +
+            "FROM spots s " +
+            "LEFT JOIN user_current_location ucl ON (" +
+            "    6371000 * 2 * ASIN(SQRT(" +
+            "        POWER(SIN(RADIANS((ucl.current_latitude  - s.latitude)  / 2)), 2) +" +
+            "        COS(RADIANS(s.latitude)) * COS(RADIANS(ucl.current_latitude)) *" +
+            "        POWER(SIN(RADIANS((ucl.current_longitude - s.longitude) / 2)), 2)" +
+            "    )) <= s.radius_m " +
+            "    AND ucl.updated_at >= NOW() - INTERVAL 10 MINUTE" +
+            ") " +
+            "GROUP BY s.spot_id " +
+            "ON DUPLICATE KEY UPDATE active_user_count = VALUES(active_user_count), calculated_at = NOW()";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isLocationAllowed(String userId) {

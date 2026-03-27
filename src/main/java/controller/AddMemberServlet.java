@@ -59,11 +59,17 @@ public class AddMemberServlet extends HttpServlet {
         String month = request.getParameter("birthmm");
         String day   = request.getParameter("birthdd");
 
+        if (year == null || year.isBlank()) {
+            response.sendRedirect(request.getContextPath() + "/member/addMember.jsp?error=birth");
+            return;
+        }
+
         String birth;
         try {
             birth = String.format("%s-%02d-%02d", year,
                     Integer.parseInt(month), Integer.parseInt(day));
-        } catch (NumberFormatException e) {
+            java.time.LocalDate.parse(birth); // 유효한 날짜인지 미리 검증
+        } catch (NumberFormatException | java.time.format.DateTimeParseException e) {
             response.sendRedirect(request.getContextPath() + "/member/addMember.jsp?error=birth");
             return;
         }
