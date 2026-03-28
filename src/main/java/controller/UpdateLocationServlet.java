@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import util.DBUtil;
+import util.LocationUtil;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -49,7 +50,7 @@ public class UpdateLocationServlet extends HttpServlet {
 
         insertLocationLog(userId, latitude, longitude);
         upsertCurrentLocation(userId, latitude, longitude);
-        recalculateSpotPresence();
+        LocationUtil.recalculateSpotPresence();
         response.getWriter().write("{\"status\":\"ok\"}");
     }
 
@@ -64,29 +65,6 @@ public class UpdateLocationServlet extends HttpServlet {
             ps.setString(1, userId);
             ps.setDouble(2, latitude);
             ps.setDouble(3, longitude);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void recalculateSpotPresence() {
-        String sql =
-            "INSERT INTO spot_presence (spot_id, active_user_count, calculated_at) " +
-            "SELECT s.spot_id, COUNT(ucl.user_id), NOW() " +
-            "FROM spots s " +
-            "LEFT JOIN user_current_location ucl ON (" +
-            "    6371000 * 2 * ASIN(SQRT(" +
-            "        POWER(SIN(RADIANS((ucl.current_latitude  - s.latitude)  / 2)), 2) +" +
-            "        COS(RADIANS(s.latitude)) * COS(RADIANS(ucl.current_latitude)) *" +
-            "        POWER(SIN(RADIANS((ucl.current_longitude - s.longitude) / 2)), 2)" +
-            "    )) <= s.radius_m " +
-            "    AND ucl.updated_at >= NOW() - INTERVAL 10 MINUTE" +
-            ") " +
-            "GROUP BY s.spot_id " +
-            "ON DUPLICATE KEY UPDATE active_user_count = VALUES(active_user_count), calculated_at = NOW()";
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

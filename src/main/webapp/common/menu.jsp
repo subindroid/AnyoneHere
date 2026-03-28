@@ -108,12 +108,11 @@
     sendLocation();
     setInterval(sendLocation, 5 * 60 * 1000);
 
-    // 페이지 이동/닫기 시 위치 공유 자동 OFF
+    // 페이지 이동/닫기 시 위치 데이터만 삭제 (위치 공유 설정은 유지)
     window.addEventListener('beforeunload', function() {
         var data = new URLSearchParams();
         data.append('_csrf', csrfToken);
-        data.append('state', 'off');
-        navigator.sendBeacon(ctx + '/toggleLocation',
+        navigator.sendBeacon(ctx + '/clearLocation',
             new Blob([data.toString()], { type: 'application/x-www-form-urlencoded' }));
     });
 })();

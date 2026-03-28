@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import util.LocationUtil;
 
 import java.io.IOException;
 
@@ -17,6 +18,10 @@ public class LogoutMemberServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         if (session != null) {
+            String userId = (String) session.getAttribute("userId");
+            if (userId != null) {
+                LocationUtil.clearLocationAndRecalculate(userId);
+            }
             session.invalidate();
         }
         response.sendRedirect(request.getContextPath() + "/member/loginMember.jsp");

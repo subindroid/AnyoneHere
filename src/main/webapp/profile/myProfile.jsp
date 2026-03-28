@@ -197,6 +197,7 @@
     document.getElementById('locationToggle').addEventListener('change', function() {
         var body = new URLSearchParams();
         body.append('_csrf', '<%= csrfToken %>');
+        body.append('state', this.checked ? 'on' : 'off');
         fetch('<%= request.getContextPath() %>/toggleLocation', { method: 'POST', body: body })
             .then(r => r.json())
             .then(data => {

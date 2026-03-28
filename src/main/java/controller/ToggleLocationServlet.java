@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import util.DBUtil;
+import util.LocationUtil;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -40,6 +41,9 @@ public class ToggleLocationServlet extends HttpServlet {
             newState = setState(userId, false);
         } else {
             newState = toggleCurrent(userId);
+        }
+        if (!newState) {
+            LocationUtil.clearLocationAndRecalculate(userId);
         }
         session.setAttribute("locationOn", newState);
         response.getWriter().write("{\"status\":\"ok\",\"locationOn\":" + newState + "}");
